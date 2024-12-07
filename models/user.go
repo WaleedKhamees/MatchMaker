@@ -16,4 +16,5 @@ type User struct {
 	role       string    `binding:"required"`
 	creditcard string
 	creditpin  string
+	approved   bool
 }

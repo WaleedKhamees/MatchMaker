@@ -35,7 +35,8 @@ func createTables() {
 		address TEXT NOT NULL,
 		city TEXT NOT NULL,
 		creditCard TEXT NOT NULL,
-		pin TEXT NOT NULL	
+		pin TEXT NOT NULL,
+		approved INTEGER NOT NULL	
 	);`
 
 	staduimsTable := `
