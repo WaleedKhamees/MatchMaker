@@ -7,18 +7,18 @@ import (
 )
 
 type User struct {
-	username   string    `binding:"required"`
-	password   string    `binding:"required"`
-	firstname  string    `binding:"required"`
-	lastname   string    `binding:"required"`
-	email      string    `binding:"required"`
-	gender     string    `binding:"required"`
-	city       string    `binding:"required"`
-	birthdate  time.Time `binding:"required"`
-	role       string    `binding:"required"`
-	creditcard string
-	creditpin  string
-	approved   bool
+	Username   string    `binding:"required"`
+	Password   string    `binding:"required"`
+	Firstname  string    `binding:"required"`
+	Lastname   string    `binding:"required"`
+	Email      string    `binding:"required"`
+	Gender     string    `binding:"required"`
+	City       string    `binding:"required"`
+	Birthdate  time.Time `binding:"required"`
+	Role       string    `binding:"required"`
+	Creditcard string
+	Creditpin  string
+	Approved   bool
 }
 
 func (u *User) Update() error {
