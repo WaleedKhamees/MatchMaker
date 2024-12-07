@@ -24,3 +24,13 @@ func UpdateUser(context *gin.Context) {
 
 	context.JSON(http.StatusOK, gin.H{"message": "User updated successfully"})
 }
+
+func getAllUsers(context *gin.Context) {
+	users, err := models.GetAllUsers()
+	if err != nil {
+		context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	context.JSON(http.StatusOK, users)
+}

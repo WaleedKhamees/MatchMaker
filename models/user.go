@@ -10,15 +10,15 @@ import (
 
 type User struct {
 	Username   string    `binding:"required"`
-	Password   string    `binding:"required"`
 	Firstname  string    `binding:"required"`
 	Lastname   string    `binding:"required"`
-	Email      string    `binding:"required"`
 	Gender     string    `binding:"required"`
+	Email      string    `binding:"required"`
+	Password   string    `binding:"required"`
+	Role       string    `binding:"required"`
+	Birthdate  time.Time `binding:"required"`
 	City       string    `binding:"required"`
 	Address    string    `binding:"required"`
-	Birthdate  time.Time `binding:"required"`
-	Role       string    `binding:"required"`
 	Creditcard string
 	Creditpin  string
 	Approved   bool
@@ -58,7 +58,7 @@ func (u *User) Update() error {
 	}
 	defer stmt.Close()
 
-	_, err = stmt.Exec(u.Username, u.Firstname, u.Lastname,
+	_, err = stmt.Exec(u.Username, u.Password, u.Firstname,
 		u.Gender, u.Email, u.Password, u.Role, u.Birthdate,
 		u.City, u.Creditcard, u.Creditpin, u.Approved, u.Username)
 
@@ -74,9 +74,9 @@ func GetUser(username string) (*User, error) {
 	defer stmt.Close()
 
 	user := User{}
-	err = stmt.QueryRow(username).Scan(&user.Username, &user.Firstname, &user.Lastname,
-		&user.Gender, &user.Email, &user.Password, &user.Role, &user.Birthdate,
-		&user.City, &user.Creditcard, &user.Creditpin, &user.Approved)
+	err = stmt.QueryRow(username).Scan(&user.Username, &user.Password, &user.Firstname, &user.Lastname,
+		&user.Email, &user.Gender, &user.City, &user.Address, &user.Birthdate,
+		&user.Role, &user.Creditcard, &user.Creditpin, &user.Approved)
 
 	return &user, err
 }
@@ -93,7 +93,7 @@ func DeleteUser(username string) error {
 	return err
 }
 
-func (u *User) approved(username string, approved bool) error {
+func (u *User) Approve(username string, approved bool) error {
 	query := `SELECT approved FROM users WHERE userName = ?`
 	stmt, err := db.DB.Prepare(query)
 	if err != nil {
@@ -139,4 +139,37 @@ func (u *User) Validate(password string) error {
 
 	return nil
 
+}
+
+func GetAllUsers() ([]User, error) {
+	query := `SELECT userName, password, firstName, lastName, email, gender, city, address, birthdate, role, approved FROM users`
+	rows, err := db.DB.Query(query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var users []User
+	for rows.Next() {
+		var user User
+		var birthdate string
+
+		err := rows.Scan(
+			&user.Username, &user.Password, &user.Firstname, &user.Lastname,
+			&user.Email, &user.Gender, &user.City, &user.Address, &birthdate,
+			&user.Role, &user.Approved,
+		)
+		if err != nil {
+			return nil, err
+		}
+
+		// Parse the birthdate string into a time.Time object
+		user.Birthdate, err = time.Parse("2006-01-02T15:04:05Z07:00", birthdate) // Adjust format to match your DB format
+		if err != nil {
+			return nil, err
+		}
+
+		users = append(users, user)
+	}
+	return users, nil
 }

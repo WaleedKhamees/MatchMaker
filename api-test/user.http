@@ -26,4 +26,7 @@ Content-Type: application/json
     "username": "walid", 
     "password": "walidwalid"
 }
-    
+##### get all users    
+GET http://localhost:8000/users
+
+
