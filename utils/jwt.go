@@ -9,7 +9,7 @@ import (
 )
 
 func GenerateToken(username string, email string, role string) (string, error) {
-	token := jwt.NewWithClaims(jwt.SigningMethodES256, jwt.MapClaims{
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"username": username,
 		"email":    email,
 		"role":     role,
@@ -26,16 +26,16 @@ func VerifyToken(tokenString string) (string, string, string, error) {
 	parsedToken, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		_, ok := token.Method.(*jwt.SigningMethodHMAC)
 		if !ok {
-			return nil, errors.New("Unexpected signing method")
+			return nil, errors.New("unexpected signing method")
 		}
 		return secret, nil
 	})
 
 	if err != nil {
-		return "", "", "", errors.New("Error parsing token")
+		return "", "", "", errors.New("error parsing token")
 	}
 	if !parsedToken.Valid {
-		return "", "", "", errors.New("Invalid token")
+		return "", "", "", errors.New("invalid token")
 	}
 	username := parsedToken.Claims.(jwt.MapClaims)["username"].(string)
 	email := parsedToken.Claims.(jwt.MapClaims)["email"].(string)

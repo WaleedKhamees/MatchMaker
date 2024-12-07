@@ -1,6 +1,7 @@
 package routes
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/WaleedKhamees/MatchMaker/models"
@@ -9,27 +10,35 @@ import (
 )
 
 func login(context *gin.Context) {
-	var email, username, password string
-	email_err := context.BindJSON(&email)
-	username_err := context.BindJSON(&username)
-	password_err := context.BindJSON(&password)
-
-	if email_err != nil && username_err != nil {
-		context.JSON(http.StatusBadRequest, gin.H{"error": "Email or username is required"})
+	var loginStruct struct {
+		Username string
+		Email    string
+		Password string `binding:"required"`
+	}
+	err := context.ShouldBindJSON(&loginStruct)
+	if err != nil {
+		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	if password_err != nil {
-		context.JSON(http.StatusBadRequest, gin.H{"error": "Password is required"})
+	if loginStruct.Username == "" && loginStruct.Email == "" {
+		context.JSON(http.StatusBadRequest, gin.H{"error": "Username or Email is required"})
 		return
 	}
 
-	user, err := models.GetUser(username)
+	user, err := models.GetUser(&loginStruct.Username, &loginStruct.Email)
 	if err != nil {
 		context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	if user.Approved == false {
+	fmt.Printf("User hashed password: %v\n", user.Password)
+
+	if !utils.ComparePassword(loginStruct.Password, user.Password) {
+		context.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid password"})
+		return
+	}
+
+	if !user.Approved {
 		context.JSON(http.StatusUnauthorized, gin.H{"error": "User not approved yet"})
 		return
 	}

@@ -34,8 +34,12 @@ func (u *User) Create() error {
 		return err
 	}
 	defer stmt.Close()
+	hashPassword, err := utils.HashPassword(u.Password)
+	if err != nil {
+		return err
+	}
 
-	_, err = stmt.Exec(u.Username, u.Firstname, u.Lastname, u.Email, u.Gender, u.Password, u.Role, u.Birthdate, u.City, u.Approved, u.Address)
+	_, err = stmt.Exec(u.Username, u.Firstname, u.Lastname, u.Email, u.Gender, hashPassword, u.Role, u.Birthdate, u.City, u.Approved, u.Address)
 	if err != nil {
 		return err
 	}
@@ -65,18 +69,22 @@ func (u *User) Update() error {
 	return err
 }
 
-func GetUser(username string) (*User, error) {
-	query := `SELECT * FROM users WHERE userName = ?`
+func GetUser(username, email *string) (*User, error) {
+	query := `SELECT 
+		userName, firstName, lastName, gender, 
+		email, password, role, birthdate, city,
+		address, approved 
+	FROM users WHERE userName = ? or email = ?`
 	stmt, err := db.DB.Prepare(query)
 	if err != nil {
 		panic(err)
 	}
 	defer stmt.Close()
-
-	user := User{}
-	err = stmt.QueryRow(username).Scan(&user.Username, &user.Password, &user.Firstname, &user.Lastname,
-		&user.Email, &user.Gender, &user.City, &user.Address, &user.Birthdate,
-		&user.Role, &user.Creditcard, &user.Creditpin, &user.Approved)
+	var user User
+	row := stmt.QueryRow(*username, *email)
+	err = row.Scan(&user.Username, &user.Firstname, &user.Lastname, &user.Gender,
+		&user.Email, &user.Password, &user.Role, &user.Birthdate, &user.City,
+		&user.Address, &user.Approved)
 
 	return &user, err
 }
@@ -134,7 +142,7 @@ func (u *User) Validate(password string) error {
 	}
 	valid := utils.ComparePassword(password, hashedPassword)
 	if !valid {
-		return errors.New("Invalid password")
+		return errors.New("invalid password")
 	}
 
 	return nil
