@@ -29,6 +29,11 @@ func login(context *gin.Context) {
 		return
 	}
 
+	if user.Approved == false {
+		context.JSON(http.StatusUnauthorized, gin.H{"error": "User not approved yet"})
+		return
+	}
+
 	generatedToken, err := utils.GenerateToken(user.Username, user.Email, user.Role)
 
 	if err != nil {

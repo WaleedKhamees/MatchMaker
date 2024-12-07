@@ -32,10 +32,10 @@ func createTables() {
 		password TEXT NOT NULL,
 		role TEXT NOT NULL,
 		birthdate datetime NOT NULL,
-		address TEXT NOT NULL,
+		address TEXT,
 		city TEXT NOT NULL,
-		creditCard TEXT NOT NULL,
-		pin TEXT NOT NULL,
+		creditCard TEXT,
+		pin TEXT,
 		approved INTEGER NOT NULL	
 	);`
 
