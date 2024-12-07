@@ -3,7 +3,7 @@ package models
 import "github.com/WaleedKhamees/MatchMaker/db"
 
 type Stadium struct {
-	Id          int    `binding:"required"`
+	Id          int
 	Name        string `binding:"required"`
 	Capacity    int    `binding:"required"`
 	VipRows     int    `binding:"required"`

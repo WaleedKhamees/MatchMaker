@@ -7,14 +7,14 @@ import (
 )
 
 type Match struct {
-	id                int       `binding:"required"`
-	homeTeamId        int       `binding:"required"`
-	awayTeamId        int       `binding:"required"`
-	stadiumId         int       `binding:"required"`
-	date              time.Time `binding:"required"`
-	mainReferee       string    `binding:"required"`
-	assistantReferee1 string    `binding:"required"`
-	assistantReferee2 string    `binding:"required"`
+	Id          int
+	HomeTeamId  int       `binding:"required"`
+	AwayTeamId  int       `binding:"required"`
+	StadiumId   int       `binding:"required"`
+	Date        time.Time `binding:"required"`
+	MainReferee string    `binding:"required"`
+	Lineman1    string    `binding:"required"`
+	Lineman2    string    `binding:"required"`
 }
 
 func GetMatches() ([]Match, error) {
@@ -26,7 +26,8 @@ func GetMatches() ([]Match, error) {
 	var matches []Match
 	for rows.Next() {
 		var match Match
-		err := rows.Scan(&match.id, &match.homeTeamId, &match.awayTeamId, &match.stadiumId, &match.date, &match.mainReferee, &match.assistantReferee1, &match.assistantReferee2)
+		err := rows.Scan(&match.Id, &match.HomeTeamId, &match.AwayTeamId, &match.StadiumId, &match.Date, &match.MainReferee,
+			&match.Lineman1, &match.Lineman2)
 		if err != nil {
 			return nil, err
 		}
@@ -37,7 +38,7 @@ func GetMatches() ([]Match, error) {
 
 func (m *Match) Save() error {
 	query := `
-		INSERT INTO matches (homeTeamId, awayTeamId, stadiumId, date, mainReferee, assistantReferee1, assistantReferee2)
+		INSERT INTO matches (homeTeamId, awayTeamId, stadiumId, date, mainReferee, lineman1, lineman2)
 		VALUES (?, ?, ?, ?, ?, ?, ?)
 		`
 
@@ -46,14 +47,26 @@ func (m *Match) Save() error {
 		return err
 	}
 	defer stmt.Close()
-	_, err = stmt.Exec(m.homeTeamId, m.awayTeamId, m.stadiumId, m.date, m.mainReferee, m.assistantReferee1, m.assistantReferee2)
+	result, err := stmt.Exec(m.HomeTeamId, m.AwayTeamId, m.StadiumId, m.Date,
+		m.MainReferee, m.Lineman1, m.Lineman2)
+
+	if err != nil {
+		return err
+	}
+	id, err := result.LastInsertId()
+	if err != nil {
+		return err
+	}
+	m.Id = int(id)
+
 	return err
+
 }
 
 func (m *Match) Update() error {
 	query := `
 		UPDATE matches 
-		SET homeTeamId = ?, awayTeamId = ?, stadiumId = ?, date = ?, mainReferee = ?, assistantReferee1 = ?, assistantReferee2 = ?
+		SET homeTeamId = ?, awayTeamId = ?, stadiumId = ?, date = ?, mainReferee = ?, lineman1 = ?, lineman2 = ?
 		where id = ?`
 
 	stmt, err := db.DB.Prepare(query)
@@ -61,6 +74,6 @@ func (m *Match) Update() error {
 		return err
 	}
 	defer stmt.Close()
-	_, err = stmt.Exec(m.homeTeamId, m.awayTeamId, m.stadiumId, m.date, m.mainReferee, m.assistantReferee1, m.assistantReferee2, m.id)
+	_, err = stmt.Exec(m.HomeTeamId, m.AwayTeamId, m.StadiumId, m.Date, m.MainReferee, m.Lineman1, m.Lineman2, m.Id)
 	return err
 }

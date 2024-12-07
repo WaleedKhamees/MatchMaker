@@ -1,0 +1,12 @@
+POST http://localhost:8000/team/create
+Content-Type: application/json
+
+{
+    "name" : "Team 1",
+    "city" : "cairo",
+    "stadiumid" : 1,
+    "coach": "Elsayed",
+    "description": "Team 1 description",
+    "founded" : 1920,
+    "logoUrl": "Team 1 logo"
+}
