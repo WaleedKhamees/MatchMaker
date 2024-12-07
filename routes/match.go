@@ -15,3 +15,4 @@ func getMatches(context *gin.Context) {
 	}
 	context.JSON(http.StatusOK, matches)
 }
+
