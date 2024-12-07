@@ -28,7 +28,7 @@ func VerifyToken(tokenString string) (string, string, string, error) {
 		if !ok {
 			return nil, errors.New("unexpected signing method")
 		}
-		return secret, nil
+		return []byte(secret), nil
 	})
 
 	if err != nil {
@@ -37,9 +37,14 @@ func VerifyToken(tokenString string) (string, string, string, error) {
 	if !parsedToken.Valid {
 		return "", "", "", errors.New("invalid token")
 	}
-	username := parsedToken.Claims.(jwt.MapClaims)["username"].(string)
-	email := parsedToken.Claims.(jwt.MapClaims)["email"].(string)
-	role := parsedToken.Claims.(jwt.MapClaims)["role"].(string)
+	claims, ok := parsedToken.Claims.(jwt.MapClaims)
+	if !ok {
+		return "", "", "", errors.New("error parsing claims")
+	}
+
+	username := claims["username"].(string)
+	email := claims["email"].(string)
+	role := claims["role"].(string)
 
 	return username, email, role, nil
 }

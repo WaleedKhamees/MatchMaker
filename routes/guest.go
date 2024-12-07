@@ -1,7 +1,6 @@
 package routes
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/WaleedKhamees/MatchMaker/models"
@@ -30,8 +29,6 @@ func login(context *gin.Context) {
 		context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-
-	fmt.Printf("User hashed password: %v\n", user.Password)
 
 	if !utils.ComparePassword(loginStruct.Password, user.Password) {
 		context.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid password"})

@@ -1,6 +1,7 @@
 package routes
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/WaleedKhamees/MatchMaker/models"
@@ -33,4 +34,35 @@ func getAllUsers(context *gin.Context) {
 	}
 
 	context.JSON(http.StatusOK, users)
+}
+
+func approveUser(context *gin.Context) {
+	var approveStruct struct {
+		Username string `binding:"required"`
+		Approved bool   `binding:"required"`
+	}
+
+	err := context.ShouldBindJSON(&approveStruct)
+
+	fmt.Printf("approveStruct: %v\n", approveStruct)
+
+	if err != nil {
+		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	username := context.GetString("username")
+	user, err := models.GetUser(&username, nil)
+
+	if err != nil {
+		context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	}
+
+	err = user.Approve(approveStruct.Username, approveStruct.Approved)
+	if err != nil {
+		context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	context.JSON(http.StatusOK, gin.H{"message": "User approved successfully"})
 }

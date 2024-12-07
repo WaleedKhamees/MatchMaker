@@ -1,7 +1,9 @@
 package models
 
 import (
+	"database/sql"
 	"errors"
+	"fmt"
 	"time"
 
 	"github.com/WaleedKhamees/MatchMaker/db"
@@ -74,18 +76,37 @@ func (u *User) Update() error {
 }
 
 func GetUser(username, email *string) (*User, error) {
-	query := `SELECT 
-		userName, firstName, lastName, gender, 
-		email, password, role, birthdate, city,
-		address, approved 
-	FROM users WHERE userName = ? or email = ?`
+	var query string
+
+	if username != nil && *username != "" {
+		query = `SELECT 
+			userName, firstName, lastName, gender, 
+			email, password, role, birthdate, city,
+			address, approved 
+		FROM users WHERE userName = ?`
+	} else {
+		query = `SELECT
+			userName, firstName, lastName, gender,
+			email, password, role, birthdate, city,
+			address, approved
+		FROM users WHERE email = ?`
+	}
+
 	stmt, err := db.DB.Prepare(query)
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 	defer stmt.Close()
+
 	var user User
-	row := stmt.QueryRow(*username, *email)
+	var row *sql.Row
+
+	if username != nil && *username != "" {
+		row = stmt.QueryRow(*username)
+	} else {
+		row = stmt.QueryRow(*email)
+	}
+
 	err = row.Scan(&user.Username, &user.Firstname, &user.Lastname, &user.Gender,
 		&user.Email, &user.Password, &user.Role, &user.Birthdate, &user.City,
 		&user.Address, &user.Approved)
@@ -108,6 +129,9 @@ func DeleteUser(username string) error {
 func (u *User) Approve(username string, approved bool) error {
 	query := `SELECT approved FROM users WHERE userName = ?`
 	stmt, err := db.DB.Prepare(query)
+
+	fmt.Printf("username: %s\n", username)
+
 	if err != nil {
 		return err
 	}

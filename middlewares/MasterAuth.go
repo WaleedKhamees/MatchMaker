@@ -8,12 +8,17 @@ import (
 )
 
 func MasterAuth(context *gin.Context) {
-	tokenString := context.GetHeader("Authorization")
+	tokenString := context.GetHeader("authorization")
+
+	if tokenString == "" {
+		context.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "No token provided"})
+		return
+	}
 
 	username, email, role, err := utils.VerifyToken(tokenString)
 
 	if err != nil || role != "master" {
-		context.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		context.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
 		return
 	}
 
