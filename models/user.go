@@ -23,6 +23,25 @@ type User struct {
 	Approved   bool
 }
 
+func (u *User) Create() error {
+	query := `INSERT INTO users
+	(userName, firstName, lastName, email, gender, password, role, birthdate, city, approved)
+	VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+
+	stmt, err := db.DB.Prepare(query)
+	if err != nil {
+		return err
+	}
+	defer stmt.Close()
+
+	_, err = stmt.Exec(u.Username, u.Firstname, u.Lastname, u.Email, u.Gender, u.Password, u.Role, u.Birthdate, u.City, u.Approved)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (u *User) Update() error {
 	query := `
 		UPDATE users 
