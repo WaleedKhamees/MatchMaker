@@ -16,11 +16,31 @@ type User struct {
 	Email      string    `binding:"required"`
 	Gender     string    `binding:"required"`
 	City       string    `binding:"required"`
+	Address    string    `binding:"required"`
 	Birthdate  time.Time `binding:"required"`
 	Role       string    `binding:"required"`
 	Creditcard string
 	Creditpin  string
 	Approved   bool
+}
+
+func (u *User) Create() error {
+	query := `INSERT INTO users
+	(userName, firstName, lastName, email, gender, password, role, birthdate, city, approved, address)
+	VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+
+	stmt, err := db.DB.Prepare(query)
+	if err != nil {
+		return err
+	}
+	defer stmt.Close()
+
+	_, err = stmt.Exec(u.Username, u.Firstname, u.Lastname, u.Email, u.Gender, u.Password, u.Role, u.Birthdate, u.City, u.Approved, u.Address)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (u *User) Update() error {
