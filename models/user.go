@@ -58,13 +58,17 @@ func (u *User) Update() error {
 
 	stmt, err := db.DB.Prepare(query)
 	if err != nil {
-		panic(err)
+		return err
 	}
 	defer stmt.Close()
 
-	_, err = stmt.Exec(u.Firstname, u.Lastname,
-		u.Gender, u.Password, u.Role, u.Birthdate,
-		u.Address, u.City, u.Creditcard, u.Creditpin, u.Approved, u.Username)
+	hashPassword, err := utils.HashPassword(u.Password)
+
+	_, err = stmt.Exec(
+		u.Firstname, u.Lastname,
+		u.Gender, hashPassword, u.Role,
+		u.Birthdate, u.Address, u.City, u.Creditcard,
+		u.Creditpin, u.Approved, u.Username)
 
 	return err
 }

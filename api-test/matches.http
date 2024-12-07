@@ -4,4 +4,10 @@ GET http://localhost:8000/matches
 
 
 ### 
+POST http://localhost:8000/match/create
+Content-Type: application/json
 
+{
+    "homeTeamId": "1",
+
+}

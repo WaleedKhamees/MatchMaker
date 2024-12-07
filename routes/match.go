@@ -16,3 +16,15 @@ func getMatches(context *gin.Context) {
 	context.JSON(http.StatusOK, matches)
 }
 
+func createMatch(context *gin.Context) {
+	var match models.Match
+	if err := context.ShouldBindJSON(&match); err != nil {
+		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	if err := match.Save(); err != nil {
+		context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	context.JSON(http.StatusCreated, match)
+}

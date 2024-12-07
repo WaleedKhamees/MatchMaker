@@ -3,10 +3,10 @@ package models
 import "github.com/WaleedKhamees/MatchMaker/db"
 
 type Stadium struct {
-	id          int    `binding:"required"`
-	name        string `binding:"required"`
-	capacity    int    `binding:"required"`
-	vipRows     int    `binding:"required"`
+	Id          int    `binding:"required"`
+	Name        string `binding:"required"`
+	Capacity    int    `binding:"required"`
+	VipRows     int    `binding:"required"`
 	SeatsPerRow int    `binding:"required"`
 }
 
@@ -21,7 +21,7 @@ func (s *Stadium) Save() error {
 		return err
 	}
 	defer stmt.Close()
-	result, err := stmt.Exec(s.name, s.capacity, s.vipRows, s.SeatsPerRow)
+	result, err := stmt.Exec(s.Name, s.Capacity, s.VipRows, s.SeatsPerRow)
 	if err != nil {
 		return err
 	}
@@ -29,6 +29,6 @@ func (s *Stadium) Save() error {
 	if err != nil {
 		return err
 	}
-	s.id = int(id)
+	s.Id = int(id)
 	return err
 }

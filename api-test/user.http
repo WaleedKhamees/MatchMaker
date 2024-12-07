@@ -29,4 +29,20 @@ Content-Type: application/json
 ##### get all users    
 GET http://localhost:8000/users
 
+###### 
+PUT http://localhost:8000/user/update
+Content-Type: application/json
 
+{
+    "username": "walid", 
+    "password": "walidwalid",
+    "email": "walid@gmail.com",
+    "firstName": "Aly",
+    "lastName": "walid",
+    "email": "walid@gmail.com",
+    "gender": "male",
+    "city": "cairo",
+    "address": "cairo",
+    "birthDate": "2002-02-02T00:00:00.000Z",
+    "role": "customer"
+}

@@ -1,0 +1,11 @@
+POST http://localhost:8000/stadium/create
+Content-Type: application/json
+
+{
+    "id" : 1,
+    "name" : "Stadium 1",
+    "capacity" : 1000,
+    "viprows" : 10,
+    "seatsperrow" : 10
+
+}
