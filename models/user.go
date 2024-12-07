@@ -50,8 +50,8 @@ func (u *User) Create() error {
 func (u *User) Update() error {
 	query := `
 		UPDATE users 
-		SET userName = ?, firstName = ?, lastName = ? , 
-		gender = ?, email = ?, password = ?, role = ?,
+		SET  firstName = ?, lastName = ? , 
+		gender = ?, password = ?, role = ?,
 		birthdate = ?, address = ?, city = ?, creditCard = ?,
 		pin = ?, approved = ?
 		where userName = ?`
@@ -62,9 +62,9 @@ func (u *User) Update() error {
 	}
 	defer stmt.Close()
 
-	_, err = stmt.Exec(u.Username, u.Password, u.Firstname,
-		u.Gender, u.Email, u.Password, u.Role, u.Birthdate,
-		u.City, u.Creditcard, u.Creditpin, u.Approved, u.Username)
+	_, err = stmt.Exec(u.Firstname, u.Lastname,
+		u.Gender, u.Password, u.Role, u.Birthdate,
+		u.Address, u.City, u.Creditcard, u.Creditpin, u.Approved, u.Username)
 
 	return err
 }
