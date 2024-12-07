@@ -36,9 +36,9 @@ func (u *User) Update() error {
 	}
 	defer stmt.Close()
 
-	_, err = stmt.Exec(u.username, u.firstname, u.lastname,
-		u.gender, u.email, u.password, u.role, u.birthdate,
-		u.city, u.creditcard, u.creditpin, u.approved, u.username)
+	_, err = stmt.Exec(u.Username, u.Firstname, u.Lastname,
+		u.Gender, u.Email, u.Password, u.Role, u.Birthdate,
+		u.City, u.Creditcard, u.Creditpin, u.Approved, u.Username)
 
 	return err
 }
@@ -52,9 +52,52 @@ func GetUser(username string) (*User, error) {
 	defer stmt.Close()
 
 	user := User{}
-	err = stmt.QueryRow(username).Scan(&user.username, &user.firstname, &user.lastname,
-		&user.gender, &user.email, &user.password, &user.role, &user.birthdate,
-		&user.city, &user.creditcard, &user.creditpin, &user.approved)
+	err = stmt.QueryRow(username).Scan(&user.Username, &user.Firstname, &user.Lastname,
+		&user.Gender, &user.Email, &user.Password, &user.Role, &user.Birthdate,
+		&user.City, &user.Creditcard, &user.Creditpin, &user.Approved)
 
 	return &user, err
+}
+
+func DeleteUser(username string) error {
+	query := `DELETE FROM users WHERE userName = ?`
+	stmt, err := db.DB.Prepare(query)
+	if err != nil {
+		panic(err)
+	}
+	defer stmt.Close()
+
+	_, err = stmt.Exec(username)
+	return err
+}
+
+func (u *User) approved(username string, approved bool) error {
+	query := `SELECT approved FROM users WHERE userName = ?`
+	stmt, err := db.DB.Prepare(query)
+	if err != nil {
+		return err
+	}
+	defer stmt.Close()
+
+	row := stmt.QueryRow(username)
+
+	err = row.Scan(&u.Approved)
+
+	if err != nil {
+		return err
+	}
+
+	if u.Approved == approved == false {
+		err = DeleteUser(username)
+		if err != nil {
+			return err
+		}
+	} else if approved == true {
+		u.Approved = approved
+		err = u.Update()
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }
