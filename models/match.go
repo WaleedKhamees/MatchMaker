@@ -34,3 +34,33 @@ func GetMatches() ([]Match, error) {
 	}
 	return matches, nil
 }
+
+func (m *Match) Save() error {
+	query := `
+		INSERT INTO matches (homeTeamId, awayTeamId, stadiumId, date, mainReferee, assistantReferee1, assistantReferee2)
+		VALUES (?, ?, ?, ?, ?, ?, ?)
+		`
+
+	stmt, err := db.DB.Prepare(query)
+	if err != nil {
+		return err
+	}
+	defer stmt.Close()
+	_, err = stmt.Exec(m.homeTeamId, m.awayTeamId, m.stadiumId, m.date, m.mainReferee, m.assistantReferee1, m.assistantReferee2)
+	return err
+}
+
+func (m *Match) Update() error {
+	query := `
+		UPDATE matches 
+		SET homeTeamId = ?, awayTeamId = ?, stadiumId = ?, date = ?, mainReferee = ?, assistantReferee1 = ?, assistantReferee2 = ?
+		where id = ?`
+
+	stmt, err := db.DB.Prepare(query)
+	if err != nil {
+		return err
+	}
+	defer stmt.Close()
+	_, err = stmt.Exec(m.homeTeamId, m.awayTeamId, m.stadiumId, m.date, m.mainReferee, m.assistantReferee1, m.assistantReferee2, m.id)
+	return err
+}
