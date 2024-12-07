@@ -1,9 +1,11 @@
 package models
 
 import (
+	"errors"
 	"time"
 
 	"github.com/WaleedKhamees/MatchMaker/db"
+	"github.com/WaleedKhamees/MatchMaker/utils"
 )
 
 type User struct {
@@ -100,4 +102,21 @@ func (u *User) approved(username string, approved bool) error {
 		}
 	}
 	return nil
+}
+
+func (u *User) Validate(password string) error {
+	query := "SELECT password FROM users WHERE username = ? OR email = ?"
+	row := db.DB.QueryRow(query, u.Username, u.Email)
+	var hashedPassword string
+	err := row.Scan(&hashedPassword)
+	if err != nil {
+		return err
+	}
+	valid := utils.ComparePassword(password, hashedPassword)
+	if !valid {
+		return errors.New("Invalid password")
+	}
+
+	return nil
+
 }

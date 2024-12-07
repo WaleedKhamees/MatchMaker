@@ -5,21 +5,19 @@ import (
 	"os"
 	"time"
 
-	"github.com/WaleedKhamees/MatchMaker/models"
 	"github.com/golang-jwt/jwt/v5"
 )
 
-func GenerateToken(user models.User) (string, error) {
+func GenerateToken(username string, email string, role string) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodES256, jwt.MapClaims{
-		"username": user.Username,
-		"email":    user.Email,
-		"role":     user.Role,
+		"username": username,
+		"email":    email,
+		"role":     role,
 		"exp":      time.Now().Add(time.Hour * 24 * 2).Unix(),
 	})
 	secret := os.Getenv("JWT_SECRET")
 
 	return token.SignedString([]byte(secret))
-
 }
 
 func VerifyToken(tokenString string) (string, string, string, error) {
