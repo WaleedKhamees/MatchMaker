@@ -12,6 +12,13 @@ func UpdateUser(context *gin.Context) {
 	var user models.User
 	err := context.ShouldBindJSON(&user)
 
+	username := context.GetString("username")
+
+	if username != user.Username {
+		context.JSON(http.StatusBadRequest, gin.H{"error": "You can only update your own user"})
+		return
+	}
+
 	if err != nil {
 		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
