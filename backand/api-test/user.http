@@ -81,3 +81,13 @@ Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6IndhbGlkQGdtYWls
     "username": "mahermaher",
     "approved": true
 }
+
+
+##### 
+DELETE  http://localhost:8000/user/delete
+Content-Type: application/json
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6IndhbGlkQGdtYWlsLmNvbSIsImV4cCI6MTczMzc4OTI4Niwicm9sZSI6Im1hc3RlciIsInVzZXJuYW1lIjoid2FsaWQifQ.wRdZbgnPchNrXhUaL25Mbtj0_xVUj6qz9ny1L_UX298
+
+{
+    "username": "mahermaher"
+}

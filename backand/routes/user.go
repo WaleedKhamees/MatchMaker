@@ -66,3 +66,24 @@ func approveUser(context *gin.Context) {
 
 	context.JSON(http.StatusOK, gin.H{"message": "User approved successfully"})
 }
+
+func deleteUser(context *gin.Context) {
+	var user struct {
+		Username string `binding:"required"`
+	}
+	err := context.ShouldBindJSON(&user)
+
+	if err != nil {
+		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	err = models.DeleteUser(user.Username)
+
+	if err != nil {
+		context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	context.JSON(http.StatusOK, gin.H{"message": "User deleted successfully"})
+}

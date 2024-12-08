@@ -13,6 +13,7 @@ func EFAAuth(context *gin.Context) {
 	username, email, role, err := utils.VerifyToken(token)
 	if err != nil {
 		context.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		return
 	}
 
 	if role != "efa" && role != "master" {
