@@ -78,7 +78,7 @@ func createTables() {
 		matchId INTEGER NOT NULL REFERENCES matches(id),
 		seatRow INTEGER NOT NULL,
 		seatColumn INTEGER NOT NULL,
-		userId INTEGER REFERENCES users(id)
+		username TEXT REFERENCES users(username)
 	);`
 
 	_, err := DB.Exec(usersTable)

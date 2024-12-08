@@ -94,5 +94,3 @@ func GetMatchByID(matchId int) (*Match, error) {
 
 	return &match, nil
 }
-
-func Get 

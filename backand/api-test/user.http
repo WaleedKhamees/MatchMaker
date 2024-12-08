@@ -42,8 +42,8 @@ POST http://localhost:8000/login
 Content-Type: application/json
 
 {
-    "email": "walid@gmail.com", 
-    "password": "walidwalid"
+    "email": "maher@gmail.com", 
+    "password": "alyalyaly"
 }
 
 
@@ -90,4 +90,16 @@ Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6IndhbGlkQGdtYWls
 
 {
     "username": "mahermaher"
+}
+
+
+### 
+POST http://localhost:8000/user/reserve
+Content-Type: application/json
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im1haGVyQGdtYWlsLmNvbSIsImV4cCI6MTczMzc5NzUxNSwicm9sZSI6ImN1c3RvbWVyIiwidXNlcm5hbWUiOiJtYWhlcm1haGVyIn0.Orp3SzoQ4sxh44_PDAhQf4GPC_HP7RtrsT1dS_IBfvc
+
+{
+    "matchid": 3, 
+    "seatrow": 1,
+    "seatcolumn": 1
 }

@@ -10,6 +10,7 @@ func RegisterRoutes(server *gin.Engine) {
 	server.GET("/users", getAllUsers)
 	server.PUT("/user/approve", middlewares.MasterAuth, approveUser)
 	server.DELETE("/user/delete", middlewares.MasterAuth, deleteUser)
+	server.POST("/user/reserve", middlewares.CustomerAuth, makeReservation)
 
 	server.GET("/matches", getMatches)
 	server.POST("/match/create", createMatch)

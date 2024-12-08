@@ -67,17 +67,17 @@ func makeReservation(context *gin.Context) {
 		MatchID    int `binding:"required"`
 		SeatRow    int `binding:"required"`
 		SeatColumn int `binding:"required"`
-		UserID     int `binding:"required"`
 	}
+
+	username := context.GetString("username")
 
 	err := context.ShouldBindJSON(&seatStruct)
 	if err != nil {
 		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	
+
 	match, err := models.GetMatchByID(seatStruct.MatchID)
-	stadium, err := models.GetStadiumByID(match.StadiumID)
 	if err != nil {
 		context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -87,6 +87,21 @@ func makeReservation(context *gin.Context) {
 		context.JSON(http.StatusBadRequest, gin.H{"error": "Cannot make a reservation for a past match"})
 		return
 	}
-	if stadium.Capacity <= 
+	available, err := models.CheckSeatAvailability(int64(seatStruct.MatchID), int64(seatStruct.SeatRow), int64(seatStruct.SeatColumn))
+	if err != nil {
+		context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	if !available {
+		context.JSON(http.StatusBadRequest, gin.H{"error": "Seat is already reserved"})
+		return
+	}
 
+	err = models.ReserveSeat(int64(seatStruct.MatchID), int64(seatStruct.SeatRow), int64(seatStruct.SeatColumn), username)
+	if err != nil {
+		context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	context.JSON(http.StatusOK, gin.H{"message": "Reservation made successfully", "match": match})
 }

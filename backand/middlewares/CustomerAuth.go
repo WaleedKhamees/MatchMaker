@@ -1,6 +1,7 @@
 package middlewares
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/WaleedKhamees/MatchMaker/utils"
@@ -12,6 +13,7 @@ func CustomerAuth(context *gin.Context) {
 
 	username, email, role, err := utils.VerifyToken(tokenString)
 
+	fmt.Printf("username: %s, email: %s, role: %s\n", username, email, role)
 	if err != nil || role != "customer" {
 		context.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
 		return

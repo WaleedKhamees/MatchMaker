@@ -33,3 +33,18 @@ func DeleteSeat(seatId int64) error {
 	return err
 }
 
+func CheckSeatAvailability(matchId int64, sRow int64, sCol int64) (bool, error) {
+	query := "SELECT * FROM seats WHERE seatRow = ? AND seatColumn = ? AND matchId = ?"
+	rows, err := db.DB.Query(query, sRow, sCol, matchId)
+	if err != nil {
+		return false, err
+	}
+	defer rows.Close()
+	return !rows.Next(), nil
+}
+
+func ReserveSeat(matchId int64, sRow int64, sCol int64, username string) error {
+	query := "INSERT INTO seats (matchId, seatRow, seatColumn, username) VALUES (?, ?, ?, ?)"
+	_, err := db.DB.Exec(query, matchId, sRow, sCol, username)
+	return err
+}

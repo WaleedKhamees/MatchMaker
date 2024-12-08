@@ -11,7 +11,7 @@ Content-Type: application/json
     "homeTeamId": 1,
     "awayTeamId": 2,
     "stadiumId": 1,
-    "date": "2021-09-01T00:00:00.000Z",
+    "date": "2025-09-01T00:00:00.000Z",
     "mainReferee": "John Doe",
     "lineman1": "Jane Doe",
     "lineman2": "Jack Doe"
