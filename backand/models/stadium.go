@@ -33,7 +33,7 @@ func (s *Stadium) Save() error {
 	return err
 }
 
-func GetStadiumByID(stadiumid int64) (Stadium, error) {
+func GetStadiumByID(stadiumid int) (Stadium, error) {
 	stadium := Stadium{}
 	query := `
 		SELECT id, name, capacity, vipRows, seatsPerRow
@@ -42,4 +42,26 @@ func GetStadiumByID(stadiumid int64) (Stadium, error) {
 		`
 	err := db.DB.QueryRow(query, stadiumid).Scan(&stadium.Id, &stadium.Name, &stadium.Capacity, &stadium.VipRows, &stadium.SeatsPerRow)
 	return stadium, err
+}
+
+func GetAllStadiums() ([]Stadium, error) {
+	stadiums := []Stadium{}
+	query := `
+		SELECT id, name, capacity, vipRows, seatsPerRow
+		FROM staduims
+		`
+	rows, err := db.DB.Query(query)
+	if err != nil {
+		return stadiums, err
+	}
+	defer rows.Close()
+	for rows.Next() {
+		stadium := Stadium{}
+		err := rows.Scan(&stadium.Id, &stadium.Name, &stadium.Capacity, &stadium.VipRows, &stadium.SeatsPerRow)
+		if err != nil {
+			return stadiums, err
+		}
+		stadiums = append(stadiums, stadium)
+	}
+	return stadiums, nil
 }

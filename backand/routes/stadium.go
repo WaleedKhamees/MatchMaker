@@ -2,6 +2,7 @@ package routes
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/WaleedKhamees/MatchMaker/models"
 	"github.com/gin-gonic/gin"
@@ -20,17 +21,20 @@ func createStadium(context *gin.Context) {
 	context.JSON(http.StatusCreated, stadium)
 }
 
-func getStadiumById(context *gin.Context) {
-	var stadiumStruct struct {
-		Id int `binding:"required"`
-	}
-
-	if err := context.ShouldBindJSON(&stadiumStruct); err != nil {
-		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+func getAllStadiums(context *gin.Context) {
+	stadiums, err := models.GetAllStadiums()
+	if err != nil {
+		context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
+	context.JSON(http.StatusOK, stadiums)
+}
 
-	stadium, err := models.GetStadiumByID(int64(stadiumStruct.Id))
+func getStadiumById(context *gin.Context) {
+	stadiumIDstr := context.Param("id")
+	stadiumID, err := strconv.Atoi(stadiumIDstr)
+
+	stadium, err := models.GetStadiumByID(stadiumID)
 	if err != nil {
 		context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

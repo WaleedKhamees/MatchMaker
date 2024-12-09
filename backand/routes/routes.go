@@ -13,6 +13,9 @@ func RegisterRoutes(server *gin.Engine) {
 	server.POST("/user/reserve", middlewares.CustomerAuth, makeReservation)
 	server.DELETE("/user/delete", middlewares.MasterAuth, deleteUser)
 
+	server.POST("/register", register)
+	server.POST("/login", login)
+
 	server.GET("/match", getMatches)
 	server.GET("/match/:id", getMatchById)
 	server.POST("/match/create", createMatch)
@@ -20,13 +23,12 @@ func RegisterRoutes(server *gin.Engine) {
 	server.GET("/match/seats", getSeats)
 	server.DELETE("/match/seats", cancelReservation)
 
+	server.GET("/stadium", getAllStadiums)
+	server.GET("/stadium/:id", getStadiumById)
 	server.POST("/stadium/create", createStadium)
-	server.GET("/stadium", getStadiumById)
 
 	server.GET("/team", getAllTeams)
 	server.GET("/team/:id", getTeamById)
 	server.POST("/team/create", createTeam)
 
-	server.POST("/register", register)
-	server.POST("/login", login)
 }
