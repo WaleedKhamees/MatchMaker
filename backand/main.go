@@ -30,5 +30,5 @@ func main() {
 
 	routes.RegisterRoutes(server)
 
-	server.Run(":8080")
+	server.Run(":8000")
 }
