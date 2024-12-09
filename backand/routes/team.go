@@ -2,6 +2,7 @@ package routes
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/WaleedKhamees/MatchMaker/models"
 	"github.com/gin-gonic/gin"
@@ -18,4 +19,23 @@ func createTeam(context *gin.Context) {
 		return
 	}
 	context.JSON(http.StatusCreated, team)
+}
+func getTeamById(context *gin.Context) {
+	teamIdStr := context.Param("id")
+	teamId, err := strconv.Atoi(teamIdStr)
+
+	team, err := models.GetTeamByID(teamId)
+	if err != nil {
+		context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	context.JSON(http.StatusOK, team)
+}
+func getAllTeams(context *gin.Context) {
+	teams, err := models.GetAllTeams()
+	if err != nil {
+		context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	context.JSON(http.StatusOK, teams)
 }

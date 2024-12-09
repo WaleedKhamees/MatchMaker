@@ -6,20 +6,25 @@ import (
 )
 
 func RegisterRoutes(server *gin.Engine) {
-	server.PUT("/user/update", UpdateUser)
-	server.GET("/users", getAllUsers)
+	server.GET("/user", getAllUsers)
+	server.GET("/user/:username", getUserByUsername)
+	server.PUT("/user", UpdateUser)
 	server.PUT("/user/approve", middlewares.MasterAuth, approveUser)
-	server.DELETE("/user/delete", middlewares.MasterAuth, deleteUser)
 	server.POST("/user/reserve", middlewares.CustomerAuth, makeReservation)
+	server.DELETE("/user/delete", middlewares.MasterAuth, deleteUser)
 
-	server.GET("/matches", getMatches)
+	server.GET("/match", getMatches)
+	server.GET("/match/:id", getMatchById)
 	server.POST("/match/create", createMatch)
 	server.PUT("/match/update", middlewares.EFAAuth, updateMatch)
 	server.GET("/match/seats", getSeats)
 	server.DELETE("/match/seats", cancelReservation)
 
 	server.POST("/stadium/create", createStadium)
+	server.GET("/stadium", getStadiumById)
 
+	server.GET("/team", getAllTeams)
+	server.GET("/team/:id", getTeamById)
 	server.POST("/team/create", createTeam)
 
 	server.POST("/register", register)

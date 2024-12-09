@@ -43,6 +43,18 @@ func getAllUsers(context *gin.Context) {
 	context.JSON(http.StatusOK, users)
 }
 
+func getUserByUsername(context *gin.Context) {
+	username := context.Param("username")
+	user, err := models.GetUser(&username, nil)
+
+	if err != nil {
+		context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	context.JSON(http.StatusOK, user)
+}
+
 func approveUser(context *gin.Context) {
 	var approveStruct struct {
 		Username string `binding:"required"`

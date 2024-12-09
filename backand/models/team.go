@@ -32,3 +32,36 @@ func (t *Team) Save() error {
 
 	return err
 }
+
+func GetAllTeams() ([]Team, error) {
+	teams := []Team{}
+	query := `
+		SELECT id, name, city, stadiumId, coach, description, founded, logoUrl
+		FROM teams
+		`
+	rows, err := db.DB.Query(query)
+	if err != nil {
+		return teams, err
+	}
+	defer rows.Close()
+	for rows.Next() {
+		team := Team{}
+		err := rows.Scan(&team.Id, &team.Name, &team.City, &team.StadiumId, &team.Coach, &team.Description, &team.Founded, &team.LogoUrl)
+		if err != nil {
+			return teams, err
+		}
+		teams = append(teams, team)
+	}
+	return teams, nil
+}
+
+func GetTeamByID(teamid int) (Team, error) {
+	team := Team{}
+	query := `
+		SELECT id, name, city, stadiumId, coach, description, founded, logoUrl
+		FROM teams
+		WHERE id = ?
+		`
+	err := db.DB.QueryRow(query, teamid).Scan(&team.Id, &team.Name, &team.City, &team.StadiumId, &team.Coach, &team.Description, &team.Founded, &team.LogoUrl)
+	return team, err
+}
