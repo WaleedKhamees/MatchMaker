@@ -54,12 +54,11 @@ export async function fetchLogin(loginData: LoginData): Promise<any> {
     if (response.ok) {
       return await response.json();
     } else {
-      const errorText = await response.text();
-      throw new Error(errorText || 'Login failed');
+      const error = await response.json();
+      throw new Error(error.error);
     }
-  } catch (error) {
-    console.error('Login error:', error);
-    throw error;
+  } catch (error: any) {
+    throw new Error(error.message);
   }
 }
 

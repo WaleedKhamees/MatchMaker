@@ -19,10 +19,12 @@ export const ErrorModalProvider = ({ children } : { children: ReactNode | ReactN
     );
 };
 
-export const showError = (error: string) => {
+export const useShowError = () => {
     const { setError } = useContext(ErrorModalContext);
-    setError(error);
-}
+    return (error: string) => {
+        setError(error);
+    };
+};
 
 export const clearError = () => {
     const { setError } = useContext(ErrorModalContext);
