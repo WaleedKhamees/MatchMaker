@@ -20,8 +20,8 @@ func RegisterRoutes(server *gin.Engine) {
 	server.GET("/match/:id", getMatchById)
 	server.POST("/match/create", createMatch)
 	server.PUT("/match/update", middlewares.EFAAuth, updateMatch)
-	server.GET("/match/:matchid/seat", getMatchSeats)
-	server.GET("/match/:matchid/seat/:seatid", getSeatById)
+	server.GET("/match/:id/seat", getMatchSeats)
+	server.GET("/match/:id/seat/:seatid", getSeatById)
 
 	server.DELETE("/match/seats", cancelReservation)
 

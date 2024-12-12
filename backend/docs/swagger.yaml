@@ -63,8 +63,6 @@ info:
 paths:
   /user:
     get:
-      consumes:
-      - application/json
       description: gets all users from the database for the admin
       produces:
       - application/json
@@ -80,6 +78,58 @@ paths:
           schema:
             $ref: '#/definitions/models.ErrorResponse'
       summary: gets all users
+      tags:
+      - users
+    put:
+      consumes:
+      - application/json
+      description: updates the user in the database
+      parameters:
+      - description: User object that needs to be updated
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/models.User'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.User'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: updates the user
+      tags:
+      - users
+  /user/{username}:
+    get:
+      description: gets the user by username from the database
+      parameters:
+      - description: Username of the user
+        in: path
+        name: username
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.User'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: gets the user by username
       tags:
       - users
 schemes:

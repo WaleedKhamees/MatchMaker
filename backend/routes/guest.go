@@ -47,7 +47,7 @@ func login(context *gin.Context) {
 		return
 	}
 
-	context.JSON(http.StatusOK, gin.H{"token": generatedToken})
+	context.JSON(http.StatusOK, gin.H{"token": generatedToken, "user": user})
 
 }
 func register(context *gin.Context) {
