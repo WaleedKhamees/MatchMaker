@@ -8,6 +8,37 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// getAllUsers returns all users
+//
+//	@Summary		gets all users
+//	@Description	gets all users from the database for the admin
+//	@Tags			users
+//	@Produce		json
+//	@Success		200		{object}	[]models.User
+//	@Failure		500		{object}	models.ErrorResponse
+//	@Router			/user	[get]
+func getAllUsers(context *gin.Context) {
+	users, err := models.GetAllUsers()
+	if err != nil {
+		context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	context.JSON(http.StatusOK, users)
+}
+
+// UpdateUser updates the user
+//
+//	@Summary		updates the user
+//	@Description	updates the user in the database
+//	@Tags			users
+//	@Accept			json
+//	@Produce		json
+//	@Param			user body models.User true "User object that needs to be updated"
+//	@Success		200		{object}  models.User
+//	@Failure		400		{object}	models.ErrorResponse
+//	@Failure		500		{object}	models.ErrorResponse
+//	@Router			/user	[put]
 func UpdateUser(context *gin.Context) {
 	var user models.User
 	err := context.ShouldBindJSON(&user)
@@ -30,19 +61,19 @@ func UpdateUser(context *gin.Context) {
 		return
 	}
 
-	context.JSON(http.StatusOK, gin.H{"message": "User updated successfully"})
+	context.JSON(http.StatusOK, gin.H{"user": user})
 }
 
-func getAllUsers(context *gin.Context) {
-	users, err := models.GetAllUsers()
-	if err != nil {
-		context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	context.JSON(http.StatusOK, users)
-}
-
+// getUserByUsername returns the user by username
+//
+// @Summary		gets the user by username
+// @Description	gets the user by username from the database
+// @Tags			users
+// @Produce		json
+// @Param			username path string true "Username of the user"
+// @Success		200		{object}	models.User
+// @Failure		500		{object}	models.ErrorResponse
+// @Router			/user/{username}	[get]
 func getUserByUsername(context *gin.Context) {
 	username := context.Param("username")
 	user, err := models.GetUser(&username, nil)

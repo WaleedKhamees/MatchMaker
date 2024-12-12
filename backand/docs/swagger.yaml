@@ -1,0 +1,88 @@
+basePath: /v1
+definitions:
+  models.ErrorResponse:
+    properties:
+      error:
+        type: string
+    required:
+    - error
+    type: object
+  models.User:
+    properties:
+      address:
+        type: string
+      approved:
+        type: boolean
+      birthdate:
+        type: string
+      city:
+        type: string
+      creditcard:
+        type: string
+      creditpin:
+        type: string
+      email:
+        type: string
+      firstname:
+        type: string
+      gender:
+        type: string
+      lastname:
+        type: string
+      password:
+        type: string
+      role:
+        type: string
+      username:
+        type: string
+    required:
+    - address
+    - birthdate
+    - city
+    - email
+    - firstname
+    - gender
+    - lastname
+    - password
+    - role
+    - username
+    type: object
+host: localhost:8000
+info:
+  contact:
+    email: support@swagger.io
+    name: API Support
+    url: http://www.swagger.io/support
+  description: Testing Swagger APIs.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: User Service
+  version: "1.0"
+paths:
+  /user:
+    get:
+      consumes:
+      - application/json
+      description: gets all users from the database for the admin
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.User'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: gets all users
+      tags:
+      - users
+schemes:
+- http
+- https
+swagger: "2.0"

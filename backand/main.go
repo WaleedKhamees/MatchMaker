@@ -8,8 +8,22 @@ import (
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
+	swaggerfiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
+// @title			User Service
+// @version		1.0
+// @description	Testing Swagger APIs.
+// @termsOfService	http://swagger.io/terms/
+// @contact.name	API Support
+// @contact.url	http://www.swagger.io/support
+// @contact.email	support@swagger.io
+// @license.name	Apache 2.0
+// @license.url	http://www.apache.org/licenses/LICENSE-2.0.html
+// @host			localhost:8000
+// @BasePath		/v1
+// @schemes		http https
 func main() {
 	err := godotenv.Load(".env")
 	if err != nil {
@@ -18,6 +32,7 @@ func main() {
 
 	db.InitDb()
 	server := gin.Default()
+	server.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 
 	server.Use(cors.New(cors.Config{
 		AllowOrigins:     []string{"http://localhost:3000"},
