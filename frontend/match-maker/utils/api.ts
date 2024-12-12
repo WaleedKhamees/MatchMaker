@@ -1,4 +1,4 @@
-const BASE_URL = 'http://localhost:8080';
+const BASE_URL = 'http://localhost:8000';
 
 export interface LoginData {
   identifier: string;
@@ -20,7 +20,7 @@ export interface RegistrationData {
 
 export async function fetchMatches(): Promise<any> {
   try {
-    const response = await fetch(`${BASE_URL}/matches`, { cache: 'no-store' });
+    const response = await fetch(`${BASE_URL}/match`, { cache: 'no-store' });
 
     if (!response.ok) {
       throw new Error('Failed to fetch matches');

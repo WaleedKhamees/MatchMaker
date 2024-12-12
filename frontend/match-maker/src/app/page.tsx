@@ -29,7 +29,7 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 py-10">
+    <div className="bg-gray-100 py-10">
       <div className="container mx-auto px-4">
         {matches.length === 0 ? (
           <div className="text-center text-gray-600">

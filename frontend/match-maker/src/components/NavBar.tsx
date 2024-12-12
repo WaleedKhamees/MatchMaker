@@ -2,8 +2,8 @@
 
 import Link from "next/link";
 import { useContext, useState } from "react";
-import { fetchLogin } from "../utils/api";
-import { AuthContext } from "../context/Auth";
+import { fetchLogin } from "../../utils/api";
+import { AuthContext } from "../../context/Auth";
 
 function LoginModal({
   onClose,
@@ -77,41 +77,19 @@ function LoginModal({
 
 const NavBar = () => {
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
-  const { Login } = useContext(AuthContext);
-
-  const handleLogin = async (loginData: {
-    identifier: string;
-    password: string;
-  }) => {
-    try {
-      const response = await fetchLogin(loginData);
-
-      if (response.ok) {
-        const userData = (await response.json()) as { token: string };
-        const { token } = userData;
-        Login(loginData.identifier, token);
-        setIsLoginModalOpen(false);
-      } else {
-        const errorText = await response.text();
-        alert(`Login failed: ${errorText}`);
-      }
-    } catch (error) {
-      console.error("Login error:", error);
-      alert("An error occurred during login");
-    }
-  };
+  const { Login, isLoggedIn, username, Logout } = useContext(AuthContext);
 
   return (
-        <div className="flex justify-between items-center mb-10">
-          <h1 className="text-4xl font-bold text-center text-gray-800">
-            Match Maker: Upcoming Football Matches
+        <div className="flex justify-between items-center px-4 py-4">
+          <h1 className="text-xl font-bold text-center text-gray-800">
+            Match Maker
           </h1>
           <div className="flex items-center space-x-4">
             {isLoggedIn ? (
               <>
-                <span className="text-gray-700">Welcome, {currentUser}</span>
+                <span className="text-gray-700">Welcome, {username}</span>
                 <button 
-                  onClick={handleLogout}
+                  onClick={Logout}
                   className="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded"
                 >
                   Logout
@@ -121,13 +99,13 @@ const NavBar = () => {
               <>
                 <button 
                   onClick={() => setIsLoginModalOpen(true)}
-                  className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded"
+                  className="bg-green-500 hover:bg-green-600 text-white font-bold py-1 px-2 rounded"
                 >
                   Login
                 </button>
                 <button 
-                  onClick={() => setIsSignUpModalOpen(true)}
-                  className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded"
+                  onClick={()=>{}}
+                  className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-1 px-2 rounded"
                 >
                   Sign Up
                 </button>
