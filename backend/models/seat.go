@@ -10,8 +10,26 @@ type Seat struct {
 	UserId     int `binding:"required"`
 }
 
-func GetSeats(mId int64) ([]Seat, error) {
-	rows, err := db.DB.Query("SELECT * FROM seats WHERE matchId = ?", mId)
+func GetAllSeats(matchid int) ([]Seat, error) {
+	rows, err := db.DB.Query("SELECT * FROM seats where matchId = ?", matchid)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var seats []Seat
+	for rows.Next() {
+		var seat Seat
+		err := rows.Scan(&seat.Id, &seat.MatchId, &seat.SeatRow, &seat.SeatColumn, &seat.UserId)
+		if err != nil {
+			return nil, err
+		}
+		seats = append(seats, seat)
+	}
+	return seats, nil
+}
+
+func GetSeatById(matchid int, seatid int) ([]Seat, error) {
+	rows, err := db.DB.Query("SELECT * FROM seats WHERE matchId = ? AND Id = ?", matchid, seatid)
 	if err != nil {
 		return nil, err
 	}
