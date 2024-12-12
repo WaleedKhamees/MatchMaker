@@ -11,7 +11,7 @@ func RegisterRoutes(server *gin.Engine) {
 	server.PUT("/user", UpdateUser)
 	server.PUT("/user/approve", middlewares.MasterAuth, approveUser)
 	server.POST("/user/reserve", middlewares.CustomerAuth, makeReservation)
-	server.DELETE("/user/delete", middlewares.MasterAuth, deleteUser)
+	server.DELETE("/user/:username", middlewares.MasterAuth, deleteUser)
 
 	server.POST("/register", register)
 	server.POST("/login", login)
@@ -20,7 +20,9 @@ func RegisterRoutes(server *gin.Engine) {
 	server.GET("/match/:id", getMatchById)
 	server.POST("/match/create", createMatch)
 	server.PUT("/match/update", middlewares.EFAAuth, updateMatch)
-	server.GET("/match/seats", getSeats)
+	server.GET("/match/:matchid/seat", getMatchSeats)
+	server.GET("/match/:matchid/seat/:seatid", getSeatById)
+
 	server.DELETE("/match/seats", cancelReservation)
 
 	server.GET("/stadium", getAllStadiums)
