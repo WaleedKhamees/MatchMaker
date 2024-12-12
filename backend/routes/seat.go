@@ -2,32 +2,46 @@ package routes
 
 import (
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/WaleedKhamees/MatchMaker/models"
 	"github.com/gin-gonic/gin"
 )
 
-func getSeats(context *gin.Context) {
-	var matchStruct struct {
-		MatchId int `binding:"required"`
-	}
+func getMatchSeats(context *gin.Context) {
+	matchid, err := strconv.Atoi(context.Param("matchid"))
 
-	err := context.ShouldBindJSON(&matchStruct)
 	if err != nil {
 		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	if err != nil {
-		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-	seats, err := models.GetSeats(int64(matchStruct.MatchId))
+	seats, err := models.GetAllSeats(matchid)
 	if err != nil {
 		context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	context.JSON(http.StatusOK, seats)
+	context.JSON(http.StatusOK, gin.H{"seats": seats})
+}
+
+func getSeatById(context *gin.Context) {
+	matchid, err := strconv.Atoi(context.Param("matchid"))
+	if err != nil {
+		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	seatid, err := strconv.Atoi(context.Param("seatid"))
+	if err != nil {
+		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	seat, err := models.GetSeatById(matchid, seatid)
+	if err != nil {
+		context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	context.JSON(http.StatusOK, gin.H{"seat": seat})
 }
 
 func cancelReservation(context *gin.Context) {
