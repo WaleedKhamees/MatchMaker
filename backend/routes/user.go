@@ -34,8 +34,8 @@ func getAllUsers(context *gin.Context) {
 //	@Tags			users
 //	@Accept			json
 //	@Produce		json
-//	@Param			user body models.User true "User object that needs to be updated"
-//	@Success		200		{object}  models.User
+//	@Param			user	body		models.User	true	"User object that needs to be updated"
+//	@Success		200		{object}	models.User
 //	@Failure		400		{object}	models.ErrorResponse
 //	@Failure		500		{object}	models.ErrorResponse
 //	@Router			/user	[put]
@@ -66,14 +66,14 @@ func UpdateUser(context *gin.Context) {
 
 // getUserByUsername returns the user by username
 //
-// @Summary		gets the user by username
-// @Description	gets the user by username from the database
-// @Tags			users
-// @Produce		json
-// @Param			username path string true "Username of the user"
-// @Success		200		{object}	models.User
-// @Failure		500		{object}	models.ErrorResponse
-// @Router			/user/{username}	[get]
+//	@Summary		gets the user by username
+//	@Description	gets the user by username from the database
+//	@Tags			users
+//	@Produce		json
+//	@Param			username			path		string	true	"Username of the user"
+//	@Success		200					{object}	models.User
+//	@Failure		500					{object}	models.ErrorResponse
+//	@Router			/user/{username}	[get]
 func getUserByUsername(context *gin.Context) {
 	username := context.Param("username")
 	user, err := models.GetUser(&username, nil)
@@ -86,11 +86,26 @@ func getUserByUsername(context *gin.Context) {
 	context.JSON(http.StatusOK, user)
 }
 
+type approveStruct struct {
+	Username string `binding:"required"`
+	Approved bool   `binding:"required"`
+}
+
+// approveUser approves the user
+//
+//	@Summary		approves the user
+//	@Description	approves the user in the database
+//	@Tags			users
+//	@Accept			json
+//	@Produce		json
+//	@Param			approveStruct	body		object	true	"Object that contains the username and the approval status"
+//	@Header			Authorization	header	string	true	"Bearer token"
+//	@Success		200				{object}	models.User
+//	@Failure		400				{object}	models.ErrorResponse
+//	@Failure		500				{object}	models.ErrorResponse
+//	@Router			/user/approve	[put]
 func approveUser(context *gin.Context) {
-	var approveStruct struct {
-		Username string `binding:"required"`
-		Approved bool   `binding:"required"`
-	}
+	var approveStruct approveStruct
 
 	err := context.ShouldBindJSON(&approveStruct)
 
@@ -117,14 +132,22 @@ func approveUser(context *gin.Context) {
 	context.JSON(http.StatusOK, gin.H{"message": "User approved successfully"})
 }
 
+// deleteUser deletes the user
+//
+//	@Summary		deletes the user
+//	@Description	deletes the user from the database
+//	@Tags			users
+//	@Produce		json
+//	@Param			username		path		string	true	"Username of the user"
+//	@Header			Authorization	header	string	true	"Bearer token"
+//	@Success		200				{object}	models.User
+//	@Failure		500				{object}	models.ErrorResponse
+//	@Router			/user/{username}	[delete]
 func deleteUser(context *gin.Context) {
-	var user struct {
-		Username string `binding:"required"`
-	}
-	err := context.ShouldBindJSON(&user)
-
+	username := context.Param("username")
+	user, err := models.GetUser(&username, nil)
 	if err != nil {
-		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
