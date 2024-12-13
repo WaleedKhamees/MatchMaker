@@ -33,17 +33,17 @@ func (u *User) Create() error {
 
 	stmt, err := db.DB.Prepare(query)
 	if err != nil {
-		return err
+		return errors.New("error preparing statement")
 	}
 	defer stmt.Close()
 	hashPassword, err := utils.HashPassword(u.Password)
 	if err != nil {
-		return err
+		return errors.New("error hashing password")
 	}
 
 	_, err = stmt.Exec(u.Username, u.Firstname, u.Lastname, u.Email, u.Gender, hashPassword, u.Role, u.Birthdate, u.City, u.Approved, u.Address)
 	if err != nil {
-		return err
+		return errors.New("username or email already exists")
 	}
 
 	return nil
