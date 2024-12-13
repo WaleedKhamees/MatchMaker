@@ -1,9 +1,9 @@
 "use client";
 
-import Link from "next/link";
 import { useContext, useState } from "react";
-import { fetchLogin } from "../../utils/api";
 import { AuthContext } from "../../context/Auth";
+import { fetchRegister } from "../../utils/api";
+import { useShowError } from "../../context/Error";
 
 function LoginModal({
   onClose,
@@ -95,7 +95,7 @@ const NavBar = () => {
               Login
             </button>
             <button
-              onClick={() => {}}
+              onClick={() => setIsSignUpModalOpen(true)}
               className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-1 px-2 rounded"
             >
               Sign Up
@@ -121,6 +121,8 @@ const NavBar = () => {
 };
 
 function SignUpModal({ onClose }: { onClose: () => void }) {
+  const showError = useShowError();
+  const [feedback, setFeedback] = useState("");
   const [formData, setFormData] = useState({
     username: "",
     firstname: "",
@@ -150,32 +152,16 @@ function SignUpModal({ onClose }: { onClose: () => void }) {
 
     // Basic validation
     if (formData.password !== formData.confirmPassword) {
-      alert("Passwords do not match");
+      showError("Passwords do not match");
       return;
     }
 
     try {
-      const response = await fetch("http://localhost:8080/register", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          ...formData,
-          birthdate: new Date(formData.birthdate).toISOString(),
-        }),
-      });
-
-      if (response.ok) {
-        alert("Registration successful!");
-        onClose();
-      } else {
-        const errorText = await response.text();
-        alert(`Registration failed: ${errorText}`);
-      }
-    } catch (error) {
-      console.error("Registration error:", error);
-      alert("An error occurred during registration");
+      const { message } = await fetchRegister(formData);
+      setFeedback(message);
+      onClose()
+    } catch (error: any) {
+      showError(error.error);
     }
   };
 
@@ -286,7 +272,9 @@ function SignUpModal({ onClose }: { onClose: () => void }) {
             required
             className="w-full p-2 border rounded"
           />
-
+          {feedback && (
+            <div className="text-center text-green-500">{feedback}</div>
+          )}
           <button
             type="submit"
             className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600"

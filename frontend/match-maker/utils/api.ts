@@ -1,4 +1,4 @@
-const BASE_URL = 'http://localhost:8000';
+const BASE_URL = "http://localhost:8000";
 
 export interface LoginData {
   identifier: string;
@@ -20,15 +20,15 @@ export interface RegistrationData {
 
 export async function fetchMatches(): Promise<any> {
   try {
-    const response = await fetch(`${BASE_URL}/match`, { cache: 'no-store' });
+    const response = await fetch(`${BASE_URL}/match`, { cache: "no-store" });
 
     if (!response.ok) {
-      throw new Error('Failed to fetch matches');
+      throw new Error("Failed to fetch matches");
     }
 
     return await response.json();
   } catch (error) {
-    console.error('Error fetching matches:', error);
+    console.error("Error fetching matches:", error);
     throw error;
   }
 }
@@ -44,9 +44,9 @@ export async function fetchLogin(loginData: LoginData): Promise<any> {
     }
 
     const response = await fetch(`${BASE_URL}/login`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify(data),
     });
@@ -58,16 +58,18 @@ export async function fetchLogin(loginData: LoginData): Promise<any> {
       throw new Error(error.error);
     }
   } catch (error: any) {
-    throw new Error(error.message);
+    throw error;
   }
 }
 
-export async function register(registrationData: RegistrationData): Promise<void> {
+export async function fetchRegister(
+  registrationData: RegistrationData
+)  {
   try {
     const response = await fetch(`${BASE_URL}/register`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify({
         ...registrationData,
@@ -76,11 +78,13 @@ export async function register(registrationData: RegistrationData): Promise<void
     });
 
     if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(errorText || 'Registration failed');
+      console.log("response not ok");
+      const error = await response.json();
+      throw error;
     }
+    const data = await response.json();
+    return data;
   } catch (error) {
-    console.error('Registration error:', error);
     throw error;
   }
 }

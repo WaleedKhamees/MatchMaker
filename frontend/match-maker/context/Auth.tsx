@@ -62,7 +62,7 @@ export const AuthProvider = ({
       setToken(token);
 
     } catch (error: any) {
-      showError(error.message);
+      showError(error.error);
     }
   };
 
