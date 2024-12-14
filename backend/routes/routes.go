@@ -3,6 +3,8 @@ package routes
 import (
 	"github.com/WaleedKhamees/MatchMaker/middlewares"
 	"github.com/gin-gonic/gin"
+	swaggerfiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 func RegisterRoutes(server *gin.Engine) {
@@ -33,4 +35,5 @@ func RegisterRoutes(server *gin.Engine) {
 	server.GET("/team/:id", getTeamById)
 	server.POST("/team/create", createTeam)
 
+	server.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 }
