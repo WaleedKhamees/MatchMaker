@@ -1,13 +1,17 @@
 package routes
 
 import (
+	"log"
+
 	"github.com/WaleedKhamees/MatchMaker/middlewares"
 	"github.com/gin-gonic/gin"
 	swaggerfiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
+
+	socketio "github.com/googollee/go-socket.io"
 )
 
-func RegisterRoutes(server *gin.Engine) {
+func RegisterRoutes(server *gin.Engine, io *socketio.Server) {
 	server.GET("/user", getAllUsers)
 	server.GET("/user/:username", getUserByUsername)
 	server.PUT("/user", UpdateUser)
@@ -36,4 +40,24 @@ func RegisterRoutes(server *gin.Engine) {
 	server.POST("/team/create", createTeam)
 
 	server.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
+
+	io.OnConnect("/", func(s socketio.Conn) error {
+		s.SetContext("")
+		return nil
+	})
+
+	io.OnEvent("/", "message", func(s socketio.Conn, msg string) {
+		log.Println("message:", msg)
+		s.Emit("reply", "have "+msg)
+	})
+	io.OnError("/", func(s socketio.Conn, e error) {
+		log.Println("meet error:", e)
+	})
+	io.OnDisconnect("/", func(s socketio.Conn, reason string) {
+		log.Println("closed", reason)
+	})
+
+	server.GET("/socket.io/*any", gin.WrapH(io))
+	server.POST("/socket.io/*any", gin.WrapH(io))
+
 }

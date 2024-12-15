@@ -1,57 +1,51 @@
 package main
 
 import (
-	"log"
-	"net/http"
+	"time"
 
+	"github.com/WaleedKhamees/MatchMaker/db"
+	"github.com/WaleedKhamees/MatchMaker/routes"
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
-
 	socketio "github.com/googollee/go-socket.io"
+	"github.com/joho/godotenv"
 )
 
+// @title			User Service
+// @version		1.0
+// @description	Testing Swagger APIs.
+// @termsOfService	http://swagger.io/terms/
+// @contact.name	API Support
+// @contact.url	http://www.swagger.io/support
+// @contact.email	support@swagger.io
+// @license.name	Apache 2.0
+// @license.url	http://www.apache.org/licenses/LICENSE-2.0.html
+// @host			localhost:8000
+// @BasePath		/v1
+// @schemes		http https
 func main() {
-	router := gin.New()
-
-	server := socketio.NewServer(nil)
-
-	server.OnConnect("/", func(s socketio.Conn) error {
-		s.SetContext("")
-		log.Println("connected:", s.ID())
-		return nil
-	})
-
-	server.OnEvent("/", "notice", func(s socketio.Conn, msg string) {
-		log.Println("notice:", msg)
-		s.Emit("reply", "have "+msg)
-	})
-
-	server.OnEvent("/", "bye", func(s socketio.Conn) string {
-		last := s.Context().(string)
-		s.Emit("bye", last)
-		s.Close()
-		return last
-	})
-
-	server.OnError("/", func(s socketio.Conn, e error) {
-		log.Println("meet error:", e)
-	})
-
-	server.OnDisconnect("/", func(s socketio.Conn, reason string) {
-		log.Println("closed", reason)
-	})
-
-	go func() {
-		if err := server.Serve(); err != nil {
-			log.Fatalf("socketio listen error: %s\n", err)
-		}
-	}()
-	defer server.Close()
-
-	router.GET("/socket.io/*any", gin.WrapH(server))
-	router.POST("/socket.io/*any", gin.WrapH(server))
-	router.StaticFS("/public", http.Dir("../asset"))
-
-	if err := router.Run(":8000"); err != nil {
-		log.Fatal("failed run app: ", err)
+	err := godotenv.Load(".env")
+	if err != nil {
+		panic("Error loading .env file")
 	}
+
+	db.InitDb()
+	server := gin.Default()
+
+	server.Use(cors.New(cors.Config{
+		AllowOrigins:     []string{"http://localhost:3000", "http://localhost:5559"},
+		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "HEAD"},
+		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
+		ExposeHeaders:    []string{"Content-Length"},
+		AllowCredentials: true,
+		MaxAge:           12 * time.Hour,
+	}))
+
+	io := socketio.NewServer(nil)
+
+	routes.RegisterRoutes(server, io)
+
+	go io.Serve()
+
+	server.Run(":8000")
 }
