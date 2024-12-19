@@ -1,8 +1,6 @@
 package main
 
 import (
-	"time"
-
 	"github.com/WaleedKhamees/MatchMaker/db"
 	"github.com/WaleedKhamees/MatchMaker/routes"
 	"github.com/gin-contrib/cors"
@@ -32,14 +30,7 @@ func main() {
 	db.InitDb()
 	server := gin.Default()
 
-	server.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"http://localhost:3000", "http://localhost:5559"},
-		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "HEAD"},
-		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
-		ExposeHeaders:    []string{"Content-Length"},
-		AllowCredentials: true,
-		MaxAge:           12 * time.Hour,
-	}))
+	server.Use(cors.Default())
 
 	io := socketio.NewServer(nil)
 

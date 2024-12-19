@@ -78,7 +78,18 @@ func (m *Match) Update() error {
 	return err
 }
 
-func GetMatchByID(matchId int) (*Match, error) {
+type MatchOutput struct {
+	Id          int
+	HomeTeam    Team
+	AwayTeam    Team
+	Stadium     Stadium
+	Date        time.Time
+	MainReferee string
+	Lineman1    string
+	Lineman2    string
+}
+
+func GetMatchByID(matchId int) (*MatchOutput, error) {
 	query := `
 		SELECT id, homeTeamId, awayTeamId, stadiumId, date, mainReferee, lineman1, lineman2
 		FROM matches
@@ -92,5 +103,29 @@ func GetMatchByID(matchId int) (*Match, error) {
 		return nil, err
 	}
 
-	return &match, nil
+	team1, err := GetTeamByID(match.HomeTeamId)
+
+	if err != nil {
+		return nil, err
+	}
+	team2, err := GetTeamByID(match.AwayTeamId)
+	if err != nil {
+		return nil, err
+	}
+	stadium, err := GetStadiumByID(match.StadiumId)
+	if err != nil {
+		return nil, err
+	}
+	output := MatchOutput{
+		Id:          match.Id,
+		HomeTeam:    team1,
+		AwayTeam:    team2,
+		Stadium:     stadium,
+		Date:        match.Date,
+		MainReferee: match.MainReferee,
+		Lineman1:    match.Lineman1,
+		Lineman2:    match.Lineman2,
+	}
+
+	return &output, nil
 }
