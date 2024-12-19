@@ -1,3 +1,5 @@
+import { GetAuthToken } from "../src/context/Auth";
+
 const BASE_URL = "http://localhost:8000";
 
 export interface LoginData {
@@ -85,6 +87,56 @@ export async function fetchRegister(
     const data = await response.json();
     return data;
   } catch (error) {
+    throw error;
+  }
+}
+
+export const fetchUnapprovedUsers = async () => {
+  try {
+    const response = await fetch(`http://localhost:8000/user/approve`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": GetAuthToken() || "",
+        },
+      }
+    );
+    if (!response.ok) {
+      switch (response.status) {
+        case 401:
+          throw new Error("Unauthorized");
+        case 403:
+          throw new Error("Forbidden");
+        default:
+          throw new Error("Failed to fetch unapproved users");
+      }
+    }
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    throw error;
+  }
+};
+export async function fetchApproveUser(username: string, approved: boolean): Promise<any> {
+  try {
+    const response = await fetch(`${BASE_URL}/user/approve`,{
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": GetAuthToken() || "",
+      },
+      body: JSON.stringify({ username, approved: approved }),
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to update user approval");
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error updating user approval:", error);
     throw error;
   }
 }

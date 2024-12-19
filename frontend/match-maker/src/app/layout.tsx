@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
-import { ErrorModalProvider } from "../../context/Error";
-import { AuthProvider } from "../../context/Auth";
+import { ErrorModalProvider } from "../context/Error";
+import { AuthProvider } from "../context/Auth";
 import NavBar from "../components/NavBar";
 import ErrorModal from "@/components/ErrorModal";
 

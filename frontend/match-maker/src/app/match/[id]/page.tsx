@@ -2,7 +2,7 @@
 
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import { useShowError } from "../../../../context/Error";
+import { useShowError } from "../../../context/Error";
 import {
   Card,
   CardContent,
