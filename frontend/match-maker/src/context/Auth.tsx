@@ -1,6 +1,6 @@
 "use client";
 import React, { createContext, ReactNode, useEffect, useState } from "react";
-import { fetchLogin } from "../utils/api";
+import { fetchLogin } from "../../utils/api";
 import { User } from "@/types";
 import { useShowError } from "./Error";
 
@@ -84,8 +84,12 @@ export const AuthProvider = ({
     if (userString) {
       const user = JSON.parse(userString);
       setUser(user);
+      if (user.Role === "master" && !window.location.pathname.includes("/master")) { 
+        window.location.href = "/master";
+      }
     }
   }, []);
+
 
   return (
     <AuthContext.Provider
