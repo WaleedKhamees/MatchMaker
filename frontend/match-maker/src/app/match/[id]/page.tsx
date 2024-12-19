@@ -86,7 +86,7 @@ export default function Page() {
   }
 
   const handleReserveClick = () => {
-    router.push(`/reserve/${data.Id}`);
+    router.push(`/reserve/${data.Id}?stadiumId=${data.Stadium.Id}`);
   };
 
   return (
