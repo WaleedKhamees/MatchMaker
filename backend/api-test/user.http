@@ -46,6 +46,15 @@ Content-Type: application/json
     "password": "alyalyaly"
 }
 
+### login user
+POST http://localhost:8000/login
+Content-Type: application/json
+
+{
+    "email": "walid@gmail.com", 
+    "password": "walidwalid"
+}
+
 
 ##### get all users    
 GET http://localhost:8000/users
@@ -75,11 +84,22 @@ Content-Type: application/json
 
 PUT http://localhost:8000/user/approve
 Content-Type: application/json
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6IndhbGlkQGdtYWlsLmNvbSIsImV4cCI6MTczNDgyMzQyMiwicm9sZSI6Im1hc3RlciIsInVzZXJuYW1lIjoid2FsaWQifQ.ko4WAmxmh9_2VFWRn4wJt64YAtI7ZoU_yQm-Q0m3hCc
+
+{
+    "username": "walidkhamees",
+    "approved": false
+}
+
+### approve user 
+
+PUT http://localhost:8000/user/approve
+Content-Type: application/json
 Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6IndhbGlkQGdtYWlsLmNvbSIsImV4cCI6MTczMzc4Nzk1MSwicm9sZSI6Im1hc3RlciIsInVzZXJuYW1lIjoid2FsaWQifQ.B7vAlVv8mxI7ysFpra_0ASyopIO81onjjCFNvI_ob7Q
 
 {
-    "username": "mahermaher",
-    "approved": true
+    "username": "walidkhamees",
+    "approved": false
 }
 
 
@@ -98,3 +118,9 @@ Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im1haGVyQGdtYWls
     "seatrow": 1,
     "seatcolumn": 1
 }
+
+
+
+### 
+GET http://localhost:8000/user/approve
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6IndhbGlkQGdtYWlsLmNvbSIsImV4cCI6MTczNDgxODQzMywicm9sZSI6Im1hc3RlciIsInVzZXJuYW1lIjoid2FsaWQifQ.LG-ctJSyMInxir9_wRqlaPM6hWVJBXq1vVzSufS8fGk

@@ -6,5 +6,4 @@ Content-Type: application/json
     "capacity" : 1000,
     "viprows" : 10,
     "seatsperrow" : 10
-
 }

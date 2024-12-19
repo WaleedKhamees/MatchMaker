@@ -10,7 +10,7 @@ import (
 )
 
 func getMatchSeats(context *gin.Context) {
-	matchid, err := strconv.Atoi(context.Param("matchid"))
+	matchid, err := strconv.Atoi(context.Param("id"))
 
 	if err != nil {
 		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})

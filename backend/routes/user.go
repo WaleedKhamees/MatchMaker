@@ -86,11 +86,6 @@ func getUserByUsername(context *gin.Context) {
 	context.JSON(http.StatusOK, user)
 }
 
-type approveStruct struct {
-	Username string `binding:"required"`
-	Approved bool   `binding:"required"`
-}
-
 // approveUser approves the user
 //
 //	@Summary		approves the user
@@ -104,12 +99,17 @@ type approveStruct struct {
 //	@Failure		400				{object}	models.ErrorResponse
 //	@Failure		500				{object}	models.ErrorResponse
 //	@Router			/user/approve	[put]
+type approveStruct struct {
+	Username string `binding:"required"`
+	Approved bool
+}
+
 func approveUser(context *gin.Context) {
 	var approveStruct approveStruct
 
 	err := context.ShouldBindJSON(&approveStruct)
 
-	fmt.Printf("approveStruct: %v\n", approveStruct)
+	fmt.Printf("%+v\n", approveStruct)
 
 	if err != nil {
 		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -121,6 +121,7 @@ func approveUser(context *gin.Context) {
 
 	if err != nil {
 		context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
 	}
 
 	err = user.Approve(approveStruct.Username, approveStruct.Approved)
@@ -159,4 +160,14 @@ func deleteUser(context *gin.Context) {
 	}
 
 	context.JSON(http.StatusOK, gin.H{"message": "User deleted successfully"})
+}
+
+func getUnapprovedUsers(context *gin.Context) {
+	users, err := models.GetUnapprovedUsers()
+	if err != nil {
+		context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	context.JSON(http.StatusOK, users)
 }

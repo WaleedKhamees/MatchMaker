@@ -209,3 +209,38 @@ func GetAllUsers() ([]User, error) {
 	}
 	return users, nil
 }
+
+func GetUnapprovedUsers() ([]User, error) {
+	query := `SELECT userName, firstName, lastName, gender, email, role, birthdate, city, address, approved FROM users WHERE approved = false`
+	rows, err := db.DB.Query(query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var users []User
+	for rows.Next() {
+		var user User
+		var birthdate string
+
+		err := rows.Scan(
+			&user.Username, &user.Firstname, &user.Lastname, &user.Gender,
+			&user.Email, &user.Role, &birthdate,
+			&user.City, &user.Address, &user.Approved,
+		)
+		user.Password = ""
+
+		if err != nil {
+			return nil, err
+		}
+
+		// Parse the birthdate string into a time.Time object
+		user.Birthdate, err = time.Parse("2006-01-02T15:04:05Z07:00", birthdate) // Adjust format to match your DB format
+		if err != nil {
+			return nil, err
+		}
+
+		users = append(users, user)
+	}
+	return users, nil
+}
