@@ -19,7 +19,7 @@ import (
 )
 
 func RegisterRoutes(server *gin.Engine, io *socketio.Server) {
-	server.GET("/user", getAllUsers)
+	server.GET("/user", middlewares.MasterAuth, getAllUsers)
 	server.GET("/user/:username", getUserByUsername)
 	server.PUT("/user", UpdateUser)
 

@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { Match } from '@/types/types';
-import { fetchMatches } from '../../utils/api';
+import { fetchMatches } from '@/utils/api';
 
 export default function Home() {
   const [isSignUpModalOpen, setIsSignUpModalOpen] = useState(false);

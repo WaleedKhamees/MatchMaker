@@ -2,8 +2,8 @@
 
 import { useContext, useState } from "react";
 import { AuthContext } from "../context/Auth";
-import { fetchRegister } from "../../utils/api";
 import { useShowError } from "../context/Error";
+import { fetchRegister } from "@/utils/api";
 
 function LoginModal({
   onClose,

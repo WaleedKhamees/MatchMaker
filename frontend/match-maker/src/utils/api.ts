@@ -1,4 +1,4 @@
-import { GetAuthToken } from "../src/context/Auth";
+import { GetAuthToken } from "@/context/Auth";
 
 const BASE_URL = "http://localhost:8000";
 
@@ -118,6 +118,7 @@ export const fetchUnapprovedUsers = async () => {
     throw error;
   }
 };
+
 export async function fetchApproveUser(username: string, approved: boolean): Promise<any> {
   try {
     const response = await fetch(`${BASE_URL}/user/approve`,{
@@ -137,6 +138,46 @@ export async function fetchApproveUser(username: string, approved: boolean): Pro
     return data;
   } catch (error) {
     console.error("Error updating user approval:", error);
+    throw error;
+  }
+}
+
+export async function deleteUser (username: string): Promise<any> {
+  try {
+    const response = await fetch(`${BASE_URL}/user/${username}`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": GetAuthToken() || "",
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to delete user");
+    }
+
+    return await response.json();
+  } catch (error) {
+    throw error;
+  }
+}
+
+export async function fetchUsers(): Promise<any> {
+  try {
+    const response = await fetch(`${BASE_URL}/user`, {
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": GetAuthToken() || "",
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch users");
+    }
+
+    return await response.json();
+  }
+  catch (error) {
     throw error;
   }
 }

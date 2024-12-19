@@ -1,8 +1,8 @@
 "use client";
 import React, { createContext, ReactNode, useEffect, useState } from "react";
-import { fetchLogin } from "../../utils/api";
 import { User } from "@/types";
 import { useShowError } from "./Error";
+import { fetchLogin } from "@/utils/api";
 
 interface AuthContextProps {
   user: User | null;

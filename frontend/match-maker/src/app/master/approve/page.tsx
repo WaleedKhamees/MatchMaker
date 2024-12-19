@@ -1,9 +1,9 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { fetchApproveUser, fetchUnapprovedUsers } from "../../../../utils/api";
 import { User } from "@/types";
 import { useShowError } from "@/context/Error";
 import Link from "next/link";
+import { fetchApproveUser, fetchUnapprovedUsers } from "@/utils/api";
 
 const App: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]);
