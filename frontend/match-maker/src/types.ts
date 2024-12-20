@@ -26,7 +26,7 @@ export type Team = {
   StadiumId: number;
   Coach: string;
   Description: string;
-  Founded: string;
+  Founded: number;
   LogoUrl: string;
 };
 

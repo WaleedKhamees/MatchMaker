@@ -7,6 +7,7 @@ import {
   fetchStadiums,
   fetchUpdateStadium,
 } from "@/utils/api";
+import Link from "next/link";
 import React, { useState, useEffect } from "react";
 
 const StadiumsPage: React.FC = () => {
@@ -38,45 +39,53 @@ const StadiumsPage: React.FC = () => {
       await fetchDeleteStadium(id);
       setStadiums(stadiums.filter((stadium) => stadium.Id !== id));
     } catch (error: any) {
-        showError(error.message);
+      showError(error.message);
     }
-  }
+  };
 
   return (
-    <div className="container mx-auto p-4">
-      <div className="flex justify-between items-center mb-4">
-        <h1 className="text-2xl font-bold">Stadiums</h1>
+    <div className="container mx-auto p-6 bg-gray-100 min-h-screen">
+      <Link
+        href="/efa"
+        className="text-blue-600 hover:underline mb-6 inline-block"
+      >
+        Back to EFA Page
+      </Link>
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-3xl font-bold text-gray-800">Stadiums</h1>
         <button
-          className="bg-blue-500 text-white px-4 py-2 rounded"
+          className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700"
           onClick={() => handleAddEditClick()}
         >
           Add Stadium
         </button>
       </div>
-      <ul className="space-y-2">
+      <ul className="space-y-6">
         {stadiums.map((stadium) => (
           <li
             key={stadium.Id}
-            className="flex flex-col p-4 border rounded space-y-2"
+            className="flex flex-col p-6 border rounded-lg shadow-lg bg-white space-y-4"
           >
             <div className="flex justify-between items-center">
-              <span className="text-lg font-semibold">{stadium.Name}</span>
-              <div className="flex space-x-2">
+              <span className="text-xl font-semibold text-gray-800">
+                {stadium.Name}
+              </span>
+              <div className="flex space-x-4">
                 <button
-                  className="bg-yellow-500 text-white px-2 py-1 rounded"
+                  className="bg-yellow-500 text-white px-4 py-2 rounded-lg hover:bg-yellow-600"
                   onClick={() => handleAddEditClick(stadium)}
                 >
                   Edit
                 </button>
                 <button
-                  className="bg-red-500 text-white px-2 py-1 rounded"
+                  className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600"
                   onClick={() => handleDelete(stadium.Id!)}
                 >
                   Delete
                 </button>
               </div>
             </div>
-            <div className="text-sm">
+            <div className="text-sm space-y-2 text-gray-700">
               <p>
                 <strong>Capacity:</strong> {stadium.Capacity} seats
               </p>
@@ -132,14 +141,13 @@ const StadiumForm: React.FC<{
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const parsedFormState = {
-        ...formState,
-        Capacity: Number(formState.Capacity),
-        VipRows: Number(formState.VipRows),
-        SeatsPerRow: Number(formState.SeatsPerRow),
+      ...formState,
+      Capacity: Number(formState.Capacity),
+      VipRows: Number(formState.VipRows),
+      SeatsPerRow: Number(formState.SeatsPerRow),
     };
     try {
       if (formState.Id) {
-
         const data = await fetchUpdateStadium(parsedFormState);
         editStadium(data);
       } else {
@@ -149,66 +157,69 @@ const StadiumForm: React.FC<{
       onSave();
       onClose();
     } catch (error: any) {
-        showError(error.message);
+      showError(error.message);
     }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="bg-white p-4 rounded shadow-md">
-      <h2 className="text-xl font-bold mb-4">
+    <form
+      onSubmit={handleSubmit}
+      className="bg-white p-8 rounded-lg shadow-lg mx-auto mt-4"
+    >
+      <h2 className="text-2xl font-bold mb-6 text-gray-800">
         {stadium ? "Edit Stadium" : "Add Stadium"}
       </h2>
-      <label className="block mb-2">
+      <label className="block mb-4">
         Name:
         <input
           type="text"
           name="Name"
           value={formState.Name}
           onChange={handleChange}
-          className="border p-2 w-full"
+          className="border p-2 w-full rounded-lg"
         />
       </label>
-      <label className="block mb-2">
+      <label className="block mb-4">
         Capacity:
         <input
           type="number"
           name="Capacity"
           value={formState.Capacity}
           onChange={handleChange}
-          className="border p-2 w-full"
+          className="border p-2 w-full rounded-lg"
         />
       </label>
-      <label className="block mb-2">
+      <label className="block mb-4">
         Vip Rows:
         <input
           type="number"
           name="VipRows"
           value={formState.VipRows}
           onChange={handleChange}
-          className="border p-2 w-full"
+          className="border p-2 w-full rounded-lg"
         />
       </label>
-      <label className="block mb-2">
+      <label className="block mb-4">
         Seats Per Row:
         <input
           type="number"
           name="SeatsPerRow"
           value={formState.SeatsPerRow}
           onChange={handleChange}
-          className="border p-2 w-full"
+          className="border p-2 w-full rounded-lg"
         />
       </label>
-      <div className="flex justify-end space-x-2">
+      <div className="flex justify-end space-x-4">
         <button
           type="submit"
-          className="bg-green-500 text-white px-4 py-2 rounded"
+          className="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700"
         >
           Save
         </button>
         <button
           type="button"
           onClick={onClose}
-          className="bg-red-500 text-white px-4 py-2 rounded"
+          className="bg-red-600 text-white px-6 py-2 rounded-lg hover:bg-red-700"
         >
           Cancel
         </button>

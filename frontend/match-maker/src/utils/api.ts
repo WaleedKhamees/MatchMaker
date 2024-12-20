@@ -261,3 +261,62 @@ export const fetchDeleteStadium = async (id: number) => {
     throw error;
   }
 }
+
+
+export const fetchTeams = async () => {
+  try {
+    const response = await fetch(`${BASE_URL}/team`);
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch teams");
+    }
+
+    return await response.json();
+  } catch (error) {
+    throw error;
+  }
+}
+
+export const fetchCreateTeam = async (formState: any) => {
+  try {
+    const response = await fetch(`${BASE_URL}/team`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": GetAuthToken() || "",
+      },
+      body: JSON.stringify(formState),
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to create team");
+    }
+
+    return await response.json();
+
+  } catch (error) {
+    throw error;
+  }
+}
+
+export const fetchUpdateTeam = async (formState: any) => {
+  try {
+    const response = await fetch(`${BASE_URL}/team`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": GetAuthToken() || "",
+      },
+      body: JSON.stringify(formState),
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to update team");
+    }
+
+    return await response.json();
+
+  } catch (error) {
+    throw error;
+  }
+}
