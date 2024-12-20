@@ -39,7 +39,7 @@ func createTables() {
 		approved INTEGER NOT NULL	
 	);`
 
-	staduimsTable := `
+	stadiumTable := `
 	CREATE TABLE IF NOT EXISTS stadiums (
 		id INTEGER PRIMARY KEY AUTOINCREMENT,
 		name TEXT NOT NULL,
@@ -86,7 +86,7 @@ func createTables() {
 	if err != nil {
 		panic(err)
 	}
-	_, err = DB.Exec(staduimsTable)
+	_, err = DB.Exec(stadiumTable)
 	if err != nil {
 		panic(err)
 	}

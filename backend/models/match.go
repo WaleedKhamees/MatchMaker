@@ -33,8 +33,8 @@ type MatchOutput struct {
 func GetMatches() ([]MatchOutput, error) {
 	query := `
 		SELECT m.id, m.homeTeamId, m.awayTeamId, m.stadiumId, m.date, m.mainReferee, m.lineman1, m.lineman2,
-			   ht.id, ht.name, ht.city, ht.stadiumId,
-			   at.id, at.name, at.city, at.stadiumId,
+			   ht.id, ht.name, ht.city, ht.stadiumId, ht.logoUrl, ht.coach, 
+			   at.id, at.name, at.city, at.stadiumId, at.logoUrl, at.coach,
 			   s.id, s.name, s.capacity, s.vipRows, s.seatsPerRow
 		FROM matches m
 		JOIN teams ht ON m.homeTeamId = ht.id
@@ -55,8 +55,8 @@ func GetMatches() ([]MatchOutput, error) {
 		var stadium Stadium
 
 		err := rows.Scan(&match.Id, &match.HomeTeam.Id, &match.AwayTeam.Id, &match.Stadium.Id, &match.Date, &match.MainReferee, &match.Lineman1, &match.Lineman2,
-			&homeTeam.Id, &homeTeam.Name, &homeTeam.City, &homeTeam.StadiumId,
-			&awayTeam.Id, &awayTeam.Name, &awayTeam.City, &awayTeam.StadiumId,
+			&homeTeam.Id, &homeTeam.Name, &homeTeam.City, &homeTeam.StadiumId, &homeTeam.LogoUrl, &homeTeam.Coach,
+			&awayTeam.Id, &awayTeam.Name, &awayTeam.City, &awayTeam.StadiumId, &awayTeam.LogoUrl, &awayTeam.Coach,
 			&stadium.Id, &stadium.Name, &stadium.Capacity, &stadium.VipRows, &stadium.SeatsPerRow)
 
 		if err != nil {

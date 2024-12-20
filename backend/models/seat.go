@@ -1,25 +1,35 @@
 package models
 
-import "github.com/WaleedKhamees/MatchMaker/db"
+import (
+	"github.com/WaleedKhamees/MatchMaker/db"
+)
 
 type Seat struct {
-	Id         int `binding:"required"`
-	MatchId    int `binding:"required"`
-	SeatRow    int `binding:"required"`
-	SeatColumn int `binding:"required"`
-	UserId     int `binding:"required"`
+	Id         int    `binding:"required"`
+	MatchId    int    `binding:"required"`
+	SeatRow    int    `binding:"required"`
+	SeatColumn int    `binding:"required"`
+	Username   string `binding:"required"`
 }
 
-func GetAllSeats(matchid int) ([]Seat, error) {
-	rows, err := db.DB.Query("SELECT * FROM seats where matchId = ?", matchid)
+type seatOutput struct {
+	SeatRow    int    `binding:"required"`
+	SeatColumn int    `binding:"required"`
+	Username   string `binding:"required"`
+}
+
+func GetAllSeats(matchid int) ([]seatOutput, error) {
+	rows, err := db.DB.Query("SELECT seatrow, seatcolumn, Username FROM seats WHERE matchId = ?", matchid)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var seats []Seat
+
+	var seats []seatOutput
+
 	for rows.Next() {
-		var seat Seat
-		err := rows.Scan(&seat.Id, &seat.MatchId, &seat.SeatRow, &seat.SeatColumn, &seat.UserId)
+		var seat seatOutput
+		err := rows.Scan(&seat.SeatRow, &seat.SeatColumn, &seat.Username)
 		if err != nil {
 			return nil, err
 		}
@@ -37,7 +47,7 @@ func GetSeatById(matchid int, seatid int) ([]Seat, error) {
 	var seats []Seat
 	for rows.Next() {
 		var seat Seat
-		err := rows.Scan(&seat.Id, &seat.MatchId, &seat.SeatRow, &seat.SeatColumn, &seat.UserId)
+		err := rows.Scan(&seat.Id, &seat.MatchId, &seat.SeatRow, &seat.SeatColumn, &seat.Username)
 		if err != nil {
 			return nil, err
 		}
@@ -46,8 +56,8 @@ func GetSeatById(matchid int, seatid int) ([]Seat, error) {
 	return seats, nil
 }
 
-func DeleteSeat(seatId int64) error {
-	_, err := db.DB.Exec("DELETE FROM seats WHERE id = ?", seatId)
+func DeleteSeat(matchid int, seatrow int, seatcol int) error {
+	_, err := db.DB.Exec("DELETE FROM seats WHERE matchId = ? AND seatRow = ? AND seatColumn = ?", matchid, seatrow, seatcol)
 	return err
 }
 
