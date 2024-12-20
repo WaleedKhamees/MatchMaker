@@ -1,10 +1,10 @@
 package routes
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/WaleedKhamees/MatchMaker/models"
+	"github.com/WaleedKhamees/MatchMaker/utils"
 	"github.com/gin-gonic/gin"
 )
 
@@ -54,8 +54,13 @@ func UpdateUser(context *gin.Context) {
 		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+	orginalUser, err := models.GetUser(&user.Username, nil)
+	if err != nil {
+		context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
 
-	err = user.Update()
+	err = user.Update(!utils.ComparePassword(user.Password, orginalUser.Password))
 	if err != nil {
 		context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -109,22 +114,17 @@ func approveUser(context *gin.Context) {
 
 	err := context.ShouldBindJSON(&approveStruct)
 
-	fmt.Printf("%+v\n", approveStruct)
-
 	if err != nil {
 		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-
-	username := context.GetString("username")
-	user, err := models.GetUser(&username, nil)
 
 	if err != nil {
 		context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	err = user.Approve(approveStruct.Username, approveStruct.Approved)
+	err = models.Approve(approveStruct.Username, approveStruct.Approved)
 	if err != nil {
 		context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

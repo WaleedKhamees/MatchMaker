@@ -9,13 +9,30 @@ Content-Type: application/json
     "email": "walid@gmail.com",
     "firstName": "walid",
     "lastName": "walid",
-    "email": "walid@gmail.com",
     "gender": "male",
     "city": "cairo",
     "address": "cairo",
     "birthDate": "2002-02-02T00:00:00.000Z",
     "role": "master"
 }
+
+### register user
+POST http://localhost:8000/register
+Content-Type: application/json
+
+{
+    "username": "walidefa", 
+    "password": "walidwalid",
+    "email": "walidefa@gmail.com",
+    "firstName": "walid",
+    "lastName": "walid",
+    "gender": "male",
+    "city": "cairo",
+    "address": "cairo",
+    "birthDate": "2002-02-02T00:00:00.000Z",
+    "role": "efa"
+}
+
 
 ### register user
 POST http://localhost:8000/register
@@ -52,6 +69,16 @@ Content-Type: application/json
 
 {
     "email": "walid@gmail.com", 
+    "password": "walidwalid"
+}
+
+
+### login user
+POST http://localhost:8000/login
+Content-Type: application/json
+
+{
+    "email": "walidefa@gmail.com",
     "password": "walidwalid"
 }
 

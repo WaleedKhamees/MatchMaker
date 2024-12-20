@@ -3,7 +3,6 @@ package models
 import (
 	"database/sql"
 	"errors"
-	"fmt"
 	"time"
 
 	"github.com/WaleedKhamees/MatchMaker/db"
@@ -49,7 +48,7 @@ func (u *User) Create() error {
 	return nil
 }
 
-func (u *User) Update() error {
+func (u *User) Update(updatePassword bool) error {
 	query := `
 		UPDATE users 
 		SET  firstName = ?, lastName = ? , 
@@ -64,11 +63,20 @@ func (u *User) Update() error {
 	}
 	defer stmt.Close()
 
-	hashPassword, err := utils.HashPassword(u.Password)
+	var password string
+
+	if updatePassword {
+		password, err = utils.HashPassword(u.Password)
+		if err != nil {
+			return err
+		}
+	} else {
+		password = u.Password
+	}
 
 	_, err = stmt.Exec(
 		u.Firstname, u.Lastname,
-		u.Gender, hashPassword, u.Role,
+		u.Gender, password, u.Role,
 		u.Birthdate, u.Address, u.City, u.Creditcard,
 		u.Creditpin, u.Approved, u.Username)
 
@@ -126,33 +134,20 @@ func DeleteUser(username string) error {
 	return err
 }
 
-func (u *User) Approve(username string, approved bool) error {
-	query := `SELECT approved FROM users WHERE userName = ?`
-	stmt, err := db.DB.Prepare(query)
-
-	fmt.Printf("username: %s\n", username)
-
+func Approve(username string, approved bool) error {
+	user, err := GetUser(&username, nil)
 	if err != nil {
-		return err
-	}
-	defer stmt.Close()
-
-	row := stmt.QueryRow(username)
-
-	err = row.Scan(&u.Approved)
-
-	if err != nil {
-		return err
+		return errors.New("user not found")
 	}
 
-	if u.Approved == approved == false {
+	if user.Approved == false && approved == false {
 		err = DeleteUser(username)
 		if err != nil {
 			return err
 		}
 	} else if approved == true {
-		u.Approved = approved
-		err = u.Update()
+		user.Approved = approved
+		err = user.Update(false)
 		if err != nil {
 			return err
 		}
