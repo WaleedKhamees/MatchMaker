@@ -1,7 +1,7 @@
 "use client";
 import { useShowError } from "@/context/Error";
 import { Team, Stadium } from "@/types";
-import { fetchCreateTeam, fetchStadiums, fetchTeams, fetchUpdateTeam } from "@/utils/api";
+import { fetchCreateTeam, fetchDeleteTeam, fetchStadiums, fetchTeams, fetchUpdateTeam } from "@/utils/api";
 import Link from "next/link";
 import React, { useState, useEffect } from "react";
 
@@ -41,10 +41,10 @@ const TeamsPage: React.FC = () => {
 
   const handleDelete = async (id: number) => {
     try {
-      // await fetchDeleteTeam(id);
-      // setTeams(teams.filter((team) => team.Id !== id));
+      await fetchDeleteTeam(id);
+      setTeams(teams.filter((team) => team.Id !== id));
     } catch (error: any) {
-      // showError(error.message);
+      showError(error.message);
     }
   };
 

@@ -31,12 +31,23 @@ export type Team = {
 };
 
 export type Match = {
-  Id?: string;
+  Id?: number;
   HomeTeam: Team;
   AwayTeam: Team;
+  Stadium: Stadium;
+  Date: string;
+  MainReferee: string;
+  Lineman1: string;
+  Lineman2: string;
+};
+
+export type MatchRequest = {
+  Id?: number;
+  HomeTeamId: number;
+  AwayTeamId: number;
   StadiumId: number;
   Date: string;
   MainReferee: string;
-  LineMan1: string;
-  LineMan2: string;
+  Lineman1: string;
+  Lineman2: string;
 };

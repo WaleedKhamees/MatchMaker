@@ -28,7 +28,6 @@ export async function fetchMatches(): Promise<any> {
     if (!response.ok) {
       throw new Error("Failed to fetch matches");
     }
-
     return await response.json();
   } catch (error) {
     console.error("Error fetching matches:", error);
@@ -189,7 +188,6 @@ export const fetchStadiums = async () => {
       throw new Error("Failed to fetch stadiums");
     }
 
-
     const data = await response.json();
     return data as Stadium[];
   } catch (error) {
@@ -203,7 +201,7 @@ export const fetchCreateStadium = async (formState: Stadium) => {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": GetAuthToken() || "",
+        Authorization: GetAuthToken() || "",
       },
       body: JSON.stringify(formState),
     });
@@ -213,11 +211,10 @@ export const fetchCreateStadium = async (formState: Stadium) => {
     }
 
     return await response.json();
-  }
-  catch (error) {
+  } catch (error) {
     throw error;
   }
-}
+};
 
 export const fetchUpdateStadium = async (formState: Stadium) => {
   try {
@@ -225,7 +222,7 @@ export const fetchUpdateStadium = async (formState: Stadium) => {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": GetAuthToken() || "",
+        Authorization: GetAuthToken() || "",
       },
       body: JSON.stringify(formState),
     });
@@ -235,11 +232,10 @@ export const fetchUpdateStadium = async (formState: Stadium) => {
     }
 
     return await response.json();
-  }
-  catch (error) {
+  } catch (error) {
     throw error;
   }
-}
+};
 
 export const fetchDeleteStadium = async (id: number) => {
   try {
@@ -247,7 +243,7 @@ export const fetchDeleteStadium = async (id: number) => {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": GetAuthToken() || "",
+        Authorization: GetAuthToken() || "",
       },
     });
 
@@ -256,12 +252,10 @@ export const fetchDeleteStadium = async (id: number) => {
     }
 
     return await response.json();
-  }
-  catch (error) {
+  } catch (error) {
     throw error;
   }
-}
-
+};
 
 export const fetchTeams = async () => {
   try {
@@ -275,7 +269,7 @@ export const fetchTeams = async () => {
   } catch (error) {
     throw error;
   }
-}
+};
 
 export const fetchCreateTeam = async (formState: any) => {
   try {
@@ -283,7 +277,7 @@ export const fetchCreateTeam = async (formState: any) => {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": GetAuthToken() || "",
+        Authorization: GetAuthToken() || "",
       },
       body: JSON.stringify(formState),
     });
@@ -293,11 +287,10 @@ export const fetchCreateTeam = async (formState: any) => {
     }
 
     return await response.json();
-
   } catch (error) {
     throw error;
   }
-}
+};
 
 export const fetchUpdateTeam = async (formState: any) => {
   try {
@@ -305,7 +298,7 @@ export const fetchUpdateTeam = async (formState: any) => {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": GetAuthToken() || "",
+        Authorization: GetAuthToken() || "",
       },
       body: JSON.stringify(formState),
     });
@@ -315,8 +308,78 @@ export const fetchUpdateTeam = async (formState: any) => {
     }
 
     return await response.json();
-
   } catch (error) {
     throw error;
   }
-}
+};
+
+export const fetchDeleteTeam = async (id: number) => {
+  const response = await fetch(`${BASE_URL}/team/${id}`, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: GetAuthToken() || "",
+    },
+  });
+
+  const data = await response.json();
+  if (!response.ok) {
+    throw new Error(data.error);
+  }
+
+  return data;
+};
+
+export const fetchCreateMatch = async (formState: any) => {
+  const response = await fetch(`${BASE_URL}/match`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: GetAuthToken() || "",
+    },
+    body: JSON.stringify(formState),
+  });
+
+  const data = await response.json();
+  if (!response.ok) {
+    throw new Error(data.error);
+  }
+
+  return data;
+};
+
+export const fetchDeleteMatch = async (id: number) => {
+  const response = await fetch(`${BASE_URL}/match/${id}`, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: GetAuthToken() || "",
+    },
+  });
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.error);
+  }
+
+  return data;
+};
+
+export const fetchUpdateMatch = async (formState: any) => {
+  const response = await fetch(`${BASE_URL}/match`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: GetAuthToken() || "",
+    },
+    body: JSON.stringify(formState),
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.error);
+  }
+
+  return data;
+};
