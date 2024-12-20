@@ -1,4 +1,5 @@
 import { GetAuthToken } from "@/context/Auth";
+import { Stadium } from "@/types";
 
 const BASE_URL = "http://localhost:8000";
 
@@ -64,9 +65,7 @@ export async function fetchLogin(loginData: LoginData): Promise<any> {
   }
 }
 
-export async function fetchRegister(
-  registrationData: RegistrationData
-)  {
+export async function fetchRegister(registrationData: RegistrationData) {
   try {
     const response = await fetch(`${BASE_URL}/register`, {
       method: "POST",
@@ -93,15 +92,13 @@ export async function fetchRegister(
 
 export const fetchUnapprovedUsers = async () => {
   try {
-    const response = await fetch(`http://localhost:8000/user/approve`,
-      {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": GetAuthToken() || "",
-        },
-      }
-    );
+    const response = await fetch(`http://localhost:8000/user/approve`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: GetAuthToken() || "",
+      },
+    });
     if (!response.ok) {
       switch (response.status) {
         case 401:
@@ -119,13 +116,16 @@ export const fetchUnapprovedUsers = async () => {
   }
 };
 
-export async function fetchApproveUser(username: string, approved: boolean): Promise<any> {
+export async function fetchApproveUser(
+  username: string,
+  approved: boolean
+): Promise<any> {
   try {
-    const response = await fetch(`${BASE_URL}/user/approve`,{
+    const response = await fetch(`${BASE_URL}/user/approve`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": GetAuthToken() || "",
+        Authorization: GetAuthToken() || "",
       },
       body: JSON.stringify({ username, approved: approved }),
     });
@@ -142,13 +142,13 @@ export async function fetchApproveUser(username: string, approved: boolean): Pro
   }
 }
 
-export async function deleteUser (username: string): Promise<any> {
+export async function deleteUser(username: string): Promise<any> {
   try {
     const response = await fetch(`${BASE_URL}/user/${username}`, {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": GetAuthToken() || "",
+        Authorization: GetAuthToken() || "",
       },
     });
 
@@ -167,12 +167,92 @@ export async function fetchUsers(): Promise<any> {
     const response = await fetch(`${BASE_URL}/user`, {
       headers: {
         "Content-Type": "application/json",
-        "Authorization": GetAuthToken() || "",
+        Authorization: GetAuthToken() || "",
       },
     });
 
     if (!response.ok) {
       throw new Error("Failed to fetch users");
+    }
+
+    return await response.json();
+  } catch (error) {
+    throw error;
+  }
+}
+
+export const fetchStadiums = async () => {
+  try {
+    const response = await fetch(`${BASE_URL}/stadium`);
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch stadiums");
+    }
+
+
+    const data = await response.json();
+    return data as Stadium[];
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const fetchCreateStadium = async (formState: Stadium) => {
+  try {
+    const response = await fetch(`${BASE_URL}/stadium`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": GetAuthToken() || "",
+      },
+      body: JSON.stringify(formState),
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to create stadium");
+    }
+
+    return await response.json();
+  }
+  catch (error) {
+    throw error;
+  }
+}
+
+export const fetchUpdateStadium = async (formState: Stadium) => {
+  try {
+    const response = await fetch(`${BASE_URL}/stadium`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": GetAuthToken() || "",
+      },
+      body: JSON.stringify(formState),
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to update stadium");
+    }
+
+    return await response.json();
+  }
+  catch (error) {
+    throw error;
+  }
+}
+
+export const fetchDeleteStadium = async (id: number) => {
+  try {
+    const response = await fetch(`${BASE_URL}/stadium/${id}`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": GetAuthToken() || "",
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to delete stadium");
     }
 
     return await response.json();

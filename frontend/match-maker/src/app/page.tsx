@@ -3,17 +3,19 @@
 import React, { useState } from 'react';
 import { Match } from '@/types/types';
 import { fetchMatches } from '@/utils/api';
+import { useShowError } from '@/context/Error';
 
 export default function Home() {
   const [matches, setMatches] = useState<Match[]>([]);
+  const showError = useShowError();
 
   React.useEffect(() => {
     async function getMatches() {
       try {
         const data = await fetchMatches();
         setMatches(data);
-      } catch (error) {
-        console.error('Error fetching matches:', error);
+      } catch (error: any) {
+        showError(error.message);
       }
     }
     getMatches();
