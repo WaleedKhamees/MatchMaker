@@ -383,3 +383,36 @@ export const fetchUpdateMatch = async (formState: any) => {
 
   return data;
 };
+
+export const fetchMatchById = async (id: number) => {
+
+  const response = await fetch(`${BASE_URL}/match/${id}`, {
+    headers: {
+      "Content-Type": "application/json",
+    }, 
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.error);
+  }
+
+  return data;
+}
+
+export const fetchMatchSeats = async (id: number) => {
+  const response = await fetch(`${BASE_URL}/match/${id}/seat`, {
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.error);
+  }
+
+  return data.seats;
+}

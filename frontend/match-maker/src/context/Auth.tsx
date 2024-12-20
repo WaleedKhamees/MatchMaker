@@ -117,7 +117,7 @@ export const GetAuthToken = () => {
   return authToken;
 };
 
-export const getUser = () => {
+export const getUser = (): User | null => {
   const userString = localStorage.getItem("user");
   if (userString) {
     return JSON.parse(userString);

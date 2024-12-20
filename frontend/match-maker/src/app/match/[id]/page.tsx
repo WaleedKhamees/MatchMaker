@@ -1,206 +1,211 @@
 "use client";
 
-import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import { useShowError } from "../../../context/Error";
-import {
-  Card,
-  CardContent,
-  Grid,
-  Typography,
-  Avatar,
-  Box,
-  Button,
-  CircularProgress,
-} from "@mui/material";
-import { useRouter } from "next/navigation";
+import { Match, Stadium } from "@/types";
+import { fetchMatchById, fetchMatchSeats } from "@/utils/api";
+import io from "socket.io-client";
+import { useParams } from "next/navigation";
+import { GetAuthToken, getUser } from "@/context/Auth";
+import { Socket } from "socket.io-client";
+import { useShowError } from "@/context/Error";
 
-interface Team {
-  Id: number;
-  Name: string;
-  City: string;
-  StadiumId: number;
-  Coach: string;
-  Description: string;
-  Founded: number;
-  LogoUrl: string;
-}
+type reservedSeat = {
+  Username: string;
+  SeatRow: number;
+  SeatColumn: number;
+};
 
-interface Stadium {
-  Id: number;
-  Name: string;
-  Capacity: number;
-  VipRows: number;
-  SeatsPerRow: number;
-}
-
-interface MatchData {
-  Id: number;
-  HomeTeam: Team;
-  AwayTeam: Team;
-  Stadium: Stadium;
-  Date: string;
-  MainReferee: string;
-  Lineman1: string;
-  Lineman2: string;
-}
-
-export default function Page() {
+const MatchPage: React.FC = () => {
   const { id } = useParams();
-  const [data, setData] = useState<MatchData | null>(null);
+
+  const [match, setMatch] = useState<Match | null>(null);
+  const [reservedSeats, setReservedSeats] = useState<reservedSeat[]>([]);
+  const [socket, setSocket] = useState<Socket | null>(null);
   const showError = useShowError();
-  const router = useRouter();
 
   useEffect(() => {
-    if (!id) return;
+    setSocket(
+      io("http://localhost:8000/socket/match", {
+        transports: ["websocket"],
+      })
+    );
 
-    const fetchData = async () => {
-      try {
-        const response = await fetch(`http://localhost:8000/match/${id}`);
-        if (!response.ok) {
-          throw new Error("Failed to fetch data");
-        }
-        const result: MatchData = await response.json();
-        setData(result);
-      } catch (err: any) {
-        showError(err.message);
+    return () => {
+      if (socket) {
+        socket.disconnect();
       }
     };
+  }, []);
 
-    fetchData();
-  }, [id]);
+  useEffect(() => {
+    if (!socket) {
+      return;
+    }
 
-  if (!data) {
-    return (
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          height: "100vh",
-        }}
-      >
-        <CircularProgress />
-      </Box>
+    socket.on("onreserve", (msg: string) => {
+      const data = JSON.parse(msg);
+
+      if (data.typeofreq === "reserve") {
+        setReservedSeats((seats) => [
+          ...seats,
+          {
+            Username: data.username,
+            SeatRow: data.seatrow,
+            SeatColumn: data.seatcol,
+          },
+        ]);
+      }
+      else if (data.typeofreq === "cancel") {
+        setReservedSeats((seats) =>
+          seats.filter(
+            (seat) => !(seat.SeatRow === data.seatrow && seat.SeatColumn === data.seatcol)
+          )
+        );
+      }
+    });
+
+    if (id) {
+      const getMatch = async () => {
+        const data = await fetchMatchById(Number(id));
+        setMatch(data);
+        const payload = JSON.stringify({ matchid: Number(id) });
+        socket.emit("subscribe", payload);
+        try {
+          const seats = await fetchMatchSeats(Number(id));
+          console.log("Seats:", seats);
+          setReservedSeats(seats);
+        } catch (error: any) {
+          showError(error.message);
+        }
+      };
+      getMatch();
+    }
+
+    return () => {
+      if (socket) {
+        socket.off("onreserve");
+      }
+    };
+  }, [socket, id]);
+
+  if (!match) {
+    return <div>Loading...</div>;
+  }
+
+  const { Stadium } = match;
+
+  const handleSeatClick = (row: number, col: number) => {
+    socket!.emit(
+      "reserve",
+      JSON.stringify({
+        token: GetAuthToken(),
+        matchid: Number(id),
+        seatrow: row,
+        seatcol: col,
+      })
+    );
+
+    setReservedSeats((seats) => [
+      ...seats,
+      {
+        Username: getUser()?.Username!,
+        SeatRow: row,
+        SeatColumn: col,
+      },
+    ]);
+
+  };
+
+  const handleCancelSeat = (row: number, col: number) => {
+    socket!.emit(
+      "cancel",
+      JSON.stringify({
+        token: GetAuthToken(),
+        matchid: Number(id),
+        seatrow: row,
+        seatcol: col,
+      })
+    );
+
+    setReservedSeats((seats) =>
+      seats.filter(
+        (seat) => !(seat.SeatRow === row && seat.SeatColumn === col)
+      )
     );
   }
 
-  const handleReserveClick = () => {
-    router.push(`/reserve/${data.Id}?stadiumId=${data.Stadium.Id}`);
-  };
-
   return (
-    <Box sx={{ padding: 3 }}>
-      {/* Teams Section */}
-      <Grid container spacing={3}>
-        <Grid item xs={12} md={6}>
-          <Card sx={{ padding: 2, borderRadius: 2 }}>
-            <CardContent>
-              <Typography variant="h6" align="center" gutterBottom>
-                {data.HomeTeam.Name}
-              </Typography>
-              <Avatar
-                src={data.HomeTeam.LogoUrl}
-                alt={data.HomeTeam.Name}
-                sx={{ width: 100, height: 100, marginBottom: 2, mx: "auto" }}
-              />
-              <Typography variant="body1">
-                <strong>City:</strong> {data.HomeTeam.City}
-              </Typography>
-              <Typography variant="body1">
-                <strong>Coach:</strong> {data.HomeTeam.Coach}
-              </Typography>
-              <Typography variant="body1">
-                <strong>Founded:</strong> {data.HomeTeam.Founded}
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                {data.HomeTeam.Description}
-              </Typography>
-            </CardContent>
-          </Card>
-        </Grid>
+    <div className="container mx-auto p-6 bg-gray-100 min-h-screen">
+      <h1 className="text-3xl font-bold text-gray-800 mb-6">
+        {match.HomeTeam.Name} vs {match.AwayTeam.Name}
+      </h1>
+      <div className="flex justify-center items-center w-full">
+        <SeatGrid
+          Stadium={Stadium}
+          reservedSeats={reservedSeats}
+          handleSeatClick={handleSeatClick}
+          handleCancelSeat={handleCancelSeat}
+        />
+      </div>
+    </div>
+  );
+};
 
-        <Grid item xs={12} md={6}>
-          <Card sx={{ padding: 2, borderRadius: 2 }}>
-            <CardContent>
-              <Typography variant="h6" align="center" gutterBottom>
-                {data.AwayTeam.Name}
-              </Typography>
-              <Avatar
-                src={data.AwayTeam.LogoUrl}
-                alt={data.AwayTeam.Name}
-                sx={{ width: 100, height: 100, marginBottom: 2, mx: "auto" }}
-              />
-              <Typography variant="body1">
-                <strong>City:</strong> {data.AwayTeam.City}
-              </Typography>
-              <Typography variant="body1">
-                <strong>Coach:</strong> {data.AwayTeam.Coach}
-              </Typography>
-              <Typography variant="body1">
-                <strong>Founded:</strong> {data.AwayTeam.Founded}
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                {data.AwayTeam.Description}
-              </Typography>
-            </CardContent>
-          </Card>
-        </Grid>
-      </Grid>
+type SeatGridProps = {
+  Stadium: Stadium;
+  reservedSeats: reservedSeat[];
+  handleSeatClick: (row: number, col: number) => void;
+  handleCancelSeat: (row: number, col: number) => void;
+};
 
-      {/* Stadium Section */}
-      <Card sx={{ marginTop: 3, padding: 2, borderRadius: 2 }}>
-        <CardContent>
-          <Typography variant="h6" gutterBottom>
-            Stadium Details
-          </Typography>
-          <Typography variant="body1">
-            <strong>Name:</strong> {data.Stadium.Name}
-          </Typography>
-          <Typography variant="body1">
-            <strong>Capacity:</strong> {data.Stadium.Capacity}
-          </Typography>
-          <Typography variant="body1">
-            <strong>VIP Rows:</strong> {data.Stadium.VipRows}
-          </Typography>
-          <Typography variant="body1">
-            <strong>Seats per Row:</strong> {data.Stadium.SeatsPerRow}
-          </Typography>
-        </CardContent>
-      </Card>
+function SeatGrid({ Stadium, reservedSeats, handleSeatClick, handleCancelSeat }: SeatGridProps) {
+  return (
+    <div className="flex flex-col">
+      {Array.from({ length: Stadium.VipRows }).map((_, row: number) => (
+        <div key={row} className="flex">
+          {Array.from({ length: Stadium.SeatsPerRow }).map((_, col: number) => {
+            const reserved = Array.isArray(reservedSeats) && reservedSeats.find(
+              (seat) => seat.SeatRow === row && seat.SeatColumn === col
+            );
+            const seatNumber = row * Stadium.SeatsPerRow + col + 1;
 
-      {/* Match Info Section */}
-      <Card sx={{ marginTop: 3, padding: 2, borderRadius: 2 }}>
-        <CardContent>
-          <Typography variant="h6" gutterBottom>
-            Match Information
-          </Typography>
-          <Typography variant="body1">
-            <strong>Date:</strong> {new Date(data.Date).toLocaleDateString()}
-          </Typography>
-          <Typography variant="body1">
-            <strong>Main Referee:</strong> {data.MainReferee}
-          </Typography>
-          <Typography variant="body1">
-            <strong>Lineman 1:</strong> {data.Lineman1}
-          </Typography>
-          <Typography variant="body1">
-            <strong>Lineman 2:</strong> {data.Lineman2}
-          </Typography>
-        </CardContent>
-      </Card>
+            if (reserved && reserved.Username === getUser()?.Username) {
+              return (
+                <button
+                  key={col}
+                  onClick={() => handleCancelSeat(row, col)}
+                  className="bg-white-500 border font-bold p-2 w-12 h-12"
+                >
+                  {seatNumber}
+                </button>
+              );
+            }
 
-      {/* Reserve Button */}
-      <Box sx={{ textAlign: "center", marginTop: 3 }}>
-        <Button
-          variant="contained"
-          color="primary"
-          size="large"
-          onClick={handleReserveClick}
-        >
-          Reserve Seat
-        </Button>
-      </Box>
-    </Box>
+            if (reserved) {
+              return (
+                <button
+                  key={col}
+                  className="bg-red-500 border font-bold p-2 w-12 h-12"
+                >
+                  {seatNumber}
+                </button>
+              );
+            }
+
+            return (
+              <button
+                key={col}
+                onClick={() => handleSeatClick(row, col)}
+                className="bg-green-500 border font-bold p-2 w-12 h-12"
+              >
+                {seatNumber}
+              </button>
+            );
+          })}
+        </div>
+      ))}
+    </div>
   );
 }
+
+export default MatchPage;
