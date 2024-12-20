@@ -7,3 +7,11 @@ Content-Type: application/json
     "viprows" : 10,
     "seatsperrow" : 10
 }
+
+
+### 
+GET http://localhost:8000/stadium
+
+
+### 
+GET http://localhost:8000/teams

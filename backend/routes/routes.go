@@ -48,7 +48,8 @@ func RegisterRoutes(server *gin.Engine, io *socketio.Server) {
 
 	server.GET("/team", getAllTeams)
 	server.GET("/team/:id", getTeamById)
-	server.POST("/team/create", createTeam)
+	server.POST("/team", middlewares.EFAAuth, createTeam)
+	server.PUT("/team", middlewares.EFAAuth, updateTeam)
 
 	server.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 

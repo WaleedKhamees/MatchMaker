@@ -65,3 +65,19 @@ func GetTeamByID(teamid int) (Team, error) {
 	err := db.DB.QueryRow(query, teamid).Scan(&team.Id, &team.Name, &team.City, &team.StadiumId, &team.Coach, &team.Description, &team.Founded, &team.LogoUrl)
 	return team, err
 }
+
+func (t *Team) Update() error {
+	query := `
+		UPDATE teams
+		SET name = ?, city = ?, stadiumId = ?, coach = ?, description = ?, founded = ?, logoUrl = ?
+		WHERE id = ?
+		`
+
+	stmt, err := db.DB.Prepare(query)
+	if err != nil {
+		return err
+	}
+	defer stmt.Close()
+	_, err = stmt.Exec(t.Name, t.City, t.StadiumId, t.Coach, t.Description, t.Founded, t.LogoUrl, t.Id)
+	return err
+}
