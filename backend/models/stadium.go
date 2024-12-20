@@ -12,7 +12,7 @@ type Stadium struct {
 
 func (s *Stadium) Save() error {
 	query := `
-		INSERT INTO staduims (name, capacity, vipRows, seatsPerRow)
+		INSERT INTO stadiums (name, capacity, vipRows, seatsPerRow)
 		VALUES (?, ?, ?, ?)
 		`
 
@@ -37,7 +37,7 @@ func GetStadiumByID(stadiumid int) (Stadium, error) {
 	stadium := Stadium{}
 	query := `
 		SELECT id, name, capacity, vipRows, seatsPerRow
-		FROM staduims
+		FROM stadiums
 		WHERE id = ?
 		`
 	err := db.DB.QueryRow(query, stadiumid).Scan(&stadium.Id, &stadium.Name, &stadium.Capacity, &stadium.VipRows, &stadium.SeatsPerRow)
@@ -48,7 +48,7 @@ func GetAllStadiums() ([]Stadium, error) {
 	stadiums := []Stadium{}
 	query := `
 		SELECT id, name, capacity, vipRows, seatsPerRow
-		FROM staduims
+		FROM stadiums
 		`
 	rows, err := db.DB.Query(query)
 	if err != nil {
@@ -68,7 +68,7 @@ func GetAllStadiums() ([]Stadium, error) {
 
 func (s *Stadium) Update() error {
 	query := `
-		UPDATE staduims
+		UPDATE stadiums
 		SET name = ?, capacity = ?, vipRows = ?, seatsPerRow = ?
 		WHERE id = ?
 		`
@@ -83,7 +83,7 @@ func (s *Stadium) Update() error {
 
 func DeleteStadium(stadiumid int) error {
 	query := `
-		DELETE FROM staduims
+		DELETE FROM stadiums
 		WHERE id = ?
 		`
 	stmt, err := db.DB.Prepare(query)

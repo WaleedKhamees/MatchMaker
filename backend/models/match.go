@@ -1,6 +1,7 @@
 package models
 
 import (
+	"errors"
 	"time"
 
 	"github.com/WaleedKhamees/MatchMaker/db"
@@ -8,10 +9,10 @@ import (
 
 type Match struct {
 	Id          int
-	HomeTeamId  int       `binding:"required"`
-	AwayTeamId  int       `binding:"required"`
-	StadiumId   int       `binding:"required"`
-	Username    string    `binding:"required"`
+	HomeTeamId  int `binding:"required"`
+	AwayTeamId  int `binding:"required"`
+	StadiumId   int `binding:"required"`
+	Username    string
 	Date        time.Time `binding:"required"`
 	MainReferee string    `binding:"required"`
 	Lineman1    string    `binding:"required"`
@@ -57,6 +58,7 @@ func GetMatches() ([]MatchOutput, error) {
 			&homeTeam.Id, &homeTeam.Name, &homeTeam.City, &homeTeam.StadiumId,
 			&awayTeam.Id, &awayTeam.Name, &awayTeam.City, &awayTeam.StadiumId,
 			&stadium.Id, &stadium.Name, &stadium.Capacity, &stadium.VipRows, &stadium.SeatsPerRow)
+
 		if err != nil {
 			return nil, err
 		}
@@ -156,4 +158,44 @@ func GetMatchByID(matchId int) (*MatchOutput, error) {
 	}
 
 	return &output, nil
+}
+
+func GetMatchByIDForUpdate(matchId int) (*Match, error) {
+	query := `
+		SELECT id, homeTeamId, awayTeamId, stadiumId, date, mainReferee, lineman1, lineman2, username
+		FROM matches
+		WHERE id = ?
+	`
+
+	row := db.DB.QueryRow(query, matchId)
+	var match Match
+	err := row.Scan(&match.Id, &match.HomeTeamId, &match.AwayTeamId, &match.StadiumId, &match.Date, &match.MainReferee, &match.Lineman1, &match.Lineman2, &match.Username)
+	if err != nil {
+		return nil, err
+	}
+
+	return &match, nil
+}
+
+func DeleteMatch(matchId int) error {
+	query := `
+		DELETE FROM matches
+		WHERE id = ?
+	`
+	stmt, err := db.DB.Prepare(query)
+	if err != nil {
+		return err
+	}
+	_, err = stmt.Exec(matchId)
+	return err
+}
+
+func (m *Match) Validate() error {
+	if m.Date.Before(time.Now()) {
+		return errors.New("match date should be in the future")
+	}
+	if m.HomeTeamId == m.AwayTeamId {
+		return errors.New("home team and away team should be different")
+	}
+	return nil
 }

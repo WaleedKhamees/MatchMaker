@@ -1,12 +1,32 @@
-POST http://localhost:8000/team/create
+
+
+### 
+POST http://localhost:8000/team
 Content-Type: application/json
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6IndhbGlkZWZhQGdtYWlsLmNvbSIsImV4cCI6MTczNDg3NzU0Mywicm9sZSI6ImVmYSIsInVzZXJuYW1lIjoid2FsaWRlZmEifQ.OKVt2rjIrexFU-H5bhS-F-k29nMQI6ZqOC86ux7AJKg
 
 {
-    "name" : "Team 1",
-    "city" : "cairo",
-    "stadiumid" : 1,
-    "coach": "Elsayed",
-    "description": "Team 1 description",
-    "founded" : 1920,
-    "logoUrl": "Team 1 logo"
+    "name": "Al Ahly",
+    "city": "Cairo",
+    "stadiumid": 1,
+    "coach": "Pitso Mosimane",
+    "description": "Al Ahly Sporting Club, commonly referred to as Al Ahly, is an Egyptian sports club based in Cairo, Egypt. The club is known for its professional football team, which plays in the Egyptian Premier League, the top tier of the Egyptian football league system. Founded in April 1907, Al Ahly was named in 2000 by the Confederation of African Football as the \"African Club of the Century\".",
+    "founded": 1907,
+    "logourl": "https://upload.wikimedia.org/wikipedia/ar/thumb/2/21/Al_Ahly_SC_logo_23.svg/1200px-Al_Ahly_SC_logo_23.svg.png"
+}
+
+
+### 
+POST http://localhost:8000/team
+Content-Type: application/json
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6IndhbGlkZWZhQGdtYWlsLmNvbSIsImV4cCI6MTczNDg3NzU0Mywicm9sZSI6ImVmYSIsInVzZXJuYW1lIjoid2FsaWRlZmEifQ.OKVt2rjIrexFU-H5bhS-F-k29nMQI6ZqOC86ux7AJKg
+
+{
+    "name": "Zamalek",
+    "city": "Cairo",
+    "stadiumid": 2,
+    "coach": "Jaime Pacheco",
+    "description": "Zamalek Sporting Club, commonly referred to as Zamalek, is an Egyptian sports club based in Cairo, Egypt. Zamalek is primarily known for its professional football team, which plays in the Egyptian Premier League, the top tier of the Egyptian football league system. Founded on 5 January 1911, Zamalek was named in 2003 by the Confederation of African Football as the \"African Club of the Century\".",
+    "founded": 1911,
+    "logourl": "https://upload.wikimedia.org/wikipedia/ar/thumb/2/2e/Zamalek_SC_logo.svg/1200px-Zamalek_SC_logo.svg.png"
 }

@@ -40,7 +40,7 @@ func createTables() {
 	);`
 
 	staduimsTable := `
-	CREATE TABLE IF NOT EXISTS staduims (
+	CREATE TABLE IF NOT EXISTS stadiums (
 		id INTEGER PRIMARY KEY AUTOINCREMENT,
 		name TEXT NOT NULL,
 		capacity INTEGER NOT NULL,
