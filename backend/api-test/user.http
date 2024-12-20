@@ -39,11 +39,11 @@ POST http://localhost:8000/register
 Content-Type: application/json
 
 {
-    "username": "mahermaher", 
-    "password": "alyalyaly",
-    "email": "maher@gmail.com",
-    "firstName": "aly",
-    "lastName": "aly",
+    "username": "walidcus", 
+    "password": "walidwalid",
+    "email": "walidcus@gmail.com",
+    "firstName": "walid",
+    "lastName": "khamees",
     "gender": "male",
     "city": "cairo",
     "address": "cairo",

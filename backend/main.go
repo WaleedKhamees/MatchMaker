@@ -5,7 +5,6 @@ import (
 	"github.com/WaleedKhamees/MatchMaker/routes"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
-	socketio "github.com/googollee/go-socket.io"
 	"github.com/joho/godotenv"
 )
 
@@ -36,11 +35,6 @@ func main() {
 		AllowHeaders: []string{"Origin", "Content-Length", "Content-Type", "Authorization"},
 	}))
 
-	io := socketio.NewServer(nil)
-
-	routes.RegisterRoutes(server, io)
-
-	go io.Serve()
-
+	routes.RegisterRoutes(server)
 	server.Run(":8000")
 }
