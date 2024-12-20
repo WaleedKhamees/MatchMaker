@@ -51,3 +51,16 @@ func updateTeam(context *gin.Context) {
 	}
 	context.JSON(http.StatusOK, team)
 }
+func deleteTeam(context *gin.Context) {
+	teamIdStr := context.Param("id")
+	teamId, err := strconv.Atoi(teamIdStr)
+	if err != nil {
+		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	if err := models.DeleteTeam(teamId); err != nil {
+		context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	context.JSON(http.StatusOK, gin.H{"message": "team deleted"})
+}

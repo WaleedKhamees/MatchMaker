@@ -33,8 +33,8 @@ func RegisterRoutes(server *gin.Engine, io *socketio.Server) {
 
 	server.GET("/match", getMatches)
 	server.GET("/match/:id", getMatchById)
-	server.POST("/match/create", middlewares.EFAAuth, createMatch)
-	server.PUT("/match/update", middlewares.EFAAuth, updateMatch)
+	server.POST("/match", middlewares.EFAAuth, createMatch)
+	server.PUT("/match", middlewares.EFAAuth, updateMatch)
 
 	server.GET("/match/:id/seat", getMatchSeats)
 	server.GET("/match/:id/seat/:seatid", getSeatById)
@@ -50,6 +50,7 @@ func RegisterRoutes(server *gin.Engine, io *socketio.Server) {
 	server.GET("/team/:id", getTeamById)
 	server.POST("/team", middlewares.EFAAuth, createTeam)
 	server.PUT("/team", middlewares.EFAAuth, updateTeam)
+	server.DELETE("/team/:id", middlewares.EFAAuth, deleteTeam)
 
 	server.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 

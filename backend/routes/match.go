@@ -39,7 +39,14 @@ func createMatch(context *gin.Context) {
 		context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	context.JSON(http.StatusCreated, match)
+
+	matchOutput, err := models.GetMatchByID(match.Id)
+	if err != nil {
+		context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	context.JSON(http.StatusCreated, matchOutput)
 }
 
 func updateMatch(context *gin.Context) {

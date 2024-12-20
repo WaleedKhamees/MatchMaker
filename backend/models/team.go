@@ -81,3 +81,17 @@ func (t *Team) Update() error {
 	_, err = stmt.Exec(t.Name, t.City, t.StadiumId, t.Coach, t.Description, t.Founded, t.LogoUrl, t.Id)
 	return err
 }
+func DeleteTeam(teamid int) error {
+	query := `
+		DELETE FROM teams
+		WHERE id = ?
+		`
+
+	stmt, err := db.DB.Prepare(query)
+	if err != nil {
+		return err
+	}
+	defer stmt.Close()
+	_, err = stmt.Exec(teamid)
+	return err
+}

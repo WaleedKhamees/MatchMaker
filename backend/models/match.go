@@ -18,22 +18,60 @@ type Match struct {
 	Lineman2    string    `binding:"required"`
 }
 
-func GetMatches() ([]Match, error) {
-	rows, err := db.DB.Query("SELECT * FROM matches")
+type MatchOutput struct {
+	Id          int
+	HomeTeam    Team
+	AwayTeam    Team
+	Stadium     Stadium
+	Date        time.Time
+	MainReferee string
+	Lineman1    string
+	Lineman2    string
+}
+
+func GetMatches() ([]MatchOutput, error) {
+	query := `
+		SELECT m.id, m.homeTeamId, m.awayTeamId, m.stadiumId, m.date, m.mainReferee, m.lineman1, m.lineman2,
+			   ht.id, ht.name, ht.city, ht.stadiumId,
+			   at.id, at.name, at.city, at.stadiumId,
+			   s.id, s.name, s.capacity, s.vipRows, s.seatsPerRow
+		FROM matches m
+		JOIN teams ht ON m.homeTeamId = ht.id
+		JOIN teams at ON m.awayTeamId = at.id
+		JOIN stadiums s ON m.stadiumId = s.id
+	`
+
+	rows, err := db.DB.Query(query)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var matches []Match
+
+	var matches []MatchOutput
 	for rows.Next() {
-		var match Match
-		err := rows.Scan(&match.Id, &match.HomeTeamId, &match.AwayTeamId, &match.StadiumId, &match.Date, &match.MainReferee,
-			&match.Lineman1, &match.Lineman2)
+		var match MatchOutput
+		var homeTeam, awayTeam Team
+		var stadium Stadium
+
+		err := rows.Scan(&match.Id, &match.HomeTeam.Id, &match.AwayTeam.Id, &match.Stadium.Id, &match.Date, &match.MainReferee, &match.Lineman1, &match.Lineman2,
+			&homeTeam.Id, &homeTeam.Name, &homeTeam.City, &homeTeam.StadiumId,
+			&awayTeam.Id, &awayTeam.Name, &awayTeam.City, &awayTeam.StadiumId,
+			&stadium.Id, &stadium.Name, &stadium.Capacity, &stadium.VipRows, &stadium.SeatsPerRow)
 		if err != nil {
 			return nil, err
 		}
+
+		match.HomeTeam = homeTeam
+		match.AwayTeam = awayTeam
+		match.Stadium = stadium
+
 		matches = append(matches, match)
 	}
+
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+
 	return matches, nil
 }
 
@@ -77,17 +115,6 @@ func (m *Match) Update() error {
 	defer stmt.Close()
 	_, err = stmt.Exec(m.HomeTeamId, m.AwayTeamId, m.StadiumId, m.Date, m.MainReferee, m.Lineman1, m.Lineman2, m.Id)
 	return err
-}
-
-type MatchOutput struct {
-	Id          int
-	HomeTeam    Team
-	AwayTeam    Team
-	Stadium     Stadium
-	Date        time.Time
-	MainReferee string
-	Lineman1    string
-	Lineman2    string
 }
 
 func GetMatchByID(matchId int) (*MatchOutput, error) {
