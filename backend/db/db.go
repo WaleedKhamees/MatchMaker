@@ -54,6 +54,7 @@ func createTables() {
 		homeTeamId INTEGER NOT NULL REFERENCES teams(id),
 		awayTeamId INTEGER NOT NULL REFERENCES teams(id),
 		stadiumId INTEGER NOT NULL REFERENCES staduims(id),
+		userName TEXT REFERENCES users(userName),
 		date datetime NOT NULL,
 		mainReferee TEXT NOT NULL,
 		lineman1 TEXT NOT NULL,

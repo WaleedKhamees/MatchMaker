@@ -11,6 +11,7 @@ type Match struct {
 	HomeTeamId  int       `binding:"required"`
 	AwayTeamId  int       `binding:"required"`
 	StadiumId   int       `binding:"required"`
+	Username    string    `binding:"required"`
 	Date        time.Time `binding:"required"`
 	MainReferee string    `binding:"required"`
 	Lineman1    string    `binding:"required"`
@@ -38,8 +39,8 @@ func GetMatches() ([]Match, error) {
 
 func (m *Match) Save() error {
 	query := `
-		INSERT INTO matches (homeTeamId, awayTeamId, stadiumId, date, mainReferee, lineman1, lineman2)
-		VALUES (?, ?, ?, ?, ?, ?, ?)
+		INSERT INTO matches (homeTeamId, awayTeamId, stadiumId, date, mainReferee, lineman1, lineman2, username)
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?)
 		`
 
 	stmt, err := db.DB.Prepare(query)
@@ -48,7 +49,7 @@ func (m *Match) Save() error {
 	}
 	defer stmt.Close()
 	result, err := stmt.Exec(m.HomeTeamId, m.AwayTeamId, m.StadiumId, m.Date,
-		m.MainReferee, m.Lineman1, m.Lineman2)
+		m.MainReferee, m.Lineman1, m.Lineman2, m.Username)
 
 	if err != nil {
 		return err
