@@ -87,9 +87,11 @@ const MatchesPage: React.FC = () => {
           >
             <div className="flex justify-between items-center">
               <div className="flex items-center space-x-6">
-                <span className="text-xl font-semibold text-gray-800">
-                  {match.HomeTeam.Name} vs {match.AwayTeam.Name}
-                </span>
+                <Link href={`/match/${match.Id}`}>
+                  <span className="text-xl font-semibold text-gray-800">
+                    {match.HomeTeam.Name} vs {match.AwayTeam.Name}
+                  </span>
+                </Link>
               </div>
               <div className="flex space-x-4">
                 <button

@@ -73,7 +73,7 @@ const MatchPage: React.FC = () => {
         try {
           const seats = await fetchMatchSeats(Number(id));
           console.log("Seats:", seats);
-          setReservedSeats(seats);
+          setReservedSeats(seats?? []);
         } catch (error: any) {
           showError(error.message);
         }
@@ -95,6 +95,10 @@ const MatchPage: React.FC = () => {
   const { Stadium } = match;
 
   const handleSeatClick = (row: number, col: number) => {
+    if (getUser()?.Role !== "customer") {
+      return;
+    }
+
     socket!.emit(
       "reserve",
       JSON.stringify({
@@ -117,6 +121,10 @@ const MatchPage: React.FC = () => {
   };
 
   const handleCancelSeat = (row: number, col: number) => {
+    if (getUser()?.Role !== "customer") {
+      return;
+    }
+
     socket!.emit(
       "cancel",
       JSON.stringify({
