@@ -66,7 +66,7 @@ const App: React.FC = () => {
           </tr>
         </thead>
         <tbody>
-          {users.map((user) => (
+          {users?.map((user) => (
             <tr key={user.Username}>
               <td className="border p-2">{user.Username}</td>
               <td className="border p-2">{user.Email}</td>

@@ -20,15 +20,15 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="bg-gray-100 py-10">
+    <div className="py-10">
       <div className="container mx-auto px-4">
-        {matches.length === 0 ? (
-          <div className="text-center text-gray-600">
+        {!matches || matches.length === 0 ? (
+          <div className="text-center">
             <p className="text-2xl">No matches scheduled at the moment</p>
           </div>
         ) : (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {matches.map((match) => (
+            {matches?.map((match) => (
               <div 
                 key={match.Id} 
                 className="bg-white rounded-lg shadow-md overflow-hidden transform transition duration-300 hover:scale-105"

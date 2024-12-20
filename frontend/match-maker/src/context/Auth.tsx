@@ -60,6 +60,7 @@ export const AuthProvider = ({
       setUser(user);
       setIsLoggedIn(true);
       setToken(token);
+      window.location.href = "/master"
 
     } catch (error: any) {
       showError(error.message);
@@ -88,6 +89,9 @@ export const AuthProvider = ({
       setUser(user);
       if (user.Role === "master" && !window.location.pathname.includes("/master")) { 
         window.location.href = "/master";
+      }
+      else if (user.Role === "efa" && !window.location.pathname.includes("/efa")) {
+        window.location.href = "/efa";
       }
     }
   }, []);
