@@ -62,7 +62,7 @@ export const AuthProvider = ({
       setToken(token);
 
     } catch (error: any) {
-      showError(error.error);
+      showError(error.message);
     }
   };
 
@@ -73,6 +73,8 @@ export const AuthProvider = ({
     localStorage.removeItem("authToken");
     localStorage.removeItem("email");
     localStorage.removeItem("username");
+    
+    window.location.href = "/";
   };
 
   useEffect(() => {
@@ -110,3 +112,11 @@ export const GetAuthToken = () => {
   const authToken = localStorage.getItem("authToken");
   return authToken;
 };
+
+export const getUser = () => {
+  const userString = localStorage.getItem("user");
+  if (userString) {
+    return JSON.parse(userString);
+  }
+  return null;
+}

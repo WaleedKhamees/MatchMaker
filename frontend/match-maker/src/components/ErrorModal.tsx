@@ -1,6 +1,6 @@
 "use client";
 import React, { useContext } from "react";
-import { clearError, ErrorModalContext } from "../context/Error";
+import { ErrorModalContext } from "../context/Error";
 
 const ErrorModal: React.FC = () => {
   const { error, setError } = useContext(ErrorModalContext);

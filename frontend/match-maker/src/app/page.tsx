@@ -5,11 +5,7 @@ import { Match } from '@/types/types';
 import { fetchMatches } from '@/utils/api';
 
 export default function Home() {
-  const [isSignUpModalOpen, setIsSignUpModalOpen] = useState(false);
-  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [matches, setMatches] = useState<Match[]>([]);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [currentUser, setCurrentUser] = useState<string | null>(null);
 
   React.useEffect(() => {
     async function getMatches() {
@@ -22,11 +18,6 @@ export default function Home() {
     }
     getMatches();
   }, []);
-
-  const handleLogout = () => {
-    setIsLoggedIn(false);
-    setCurrentUser(null);
-  };
 
   return (
     <div className="bg-gray-100 py-10">
