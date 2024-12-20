@@ -35,14 +35,16 @@ func RegisterRoutes(server *gin.Engine, io *socketio.Server) {
 	server.GET("/match/:id", getMatchById)
 	server.POST("/match/create", middlewares.EFAAuth, createMatch)
 	server.PUT("/match/update", middlewares.EFAAuth, updateMatch)
+
 	server.GET("/match/:id/seat", getMatchSeats)
 	server.GET("/match/:id/seat/:seatid", getSeatById)
-
 	server.DELETE("/match/seats", cancelReservation)
 
 	server.GET("/stadium", getAllStadiums)
 	server.GET("/stadium/:id", getStadiumById)
-	server.POST("/stadium/create", createStadium)
+	server.POST("/stadium", middlewares.EFAAuth, createStadium)
+	server.PUT("/stadium", middlewares.EFAAuth, updateStadium)
+	server.DELETE("/stadium/:id", middlewares.EFAAuth, deleteStadium)
 
 	server.GET("/team", getAllTeams)
 	server.GET("/team/:id", getTeamById)

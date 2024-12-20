@@ -42,3 +42,34 @@ func getStadiumById(context *gin.Context) {
 
 	context.JSON(http.StatusOK, gin.H{"stadium": stadium})
 }
+
+func updateStadium(context *gin.Context) {
+	var stadium models.Stadium
+	if err := context.ShouldBindJSON(&stadium); err != nil {
+		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	if err := stadium.Update(); err != nil {
+		context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	context.JSON(http.StatusOK, stadium)
+}
+
+func deleteStadium(context *gin.Context) {
+	stadiumIDstr := context.Param("id")
+	stadiumID, err := strconv.Atoi(stadiumIDstr)
+
+	if err != nil {
+		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	err = models.DeleteStadium(stadiumID)
+	if err != nil {
+		context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	context.JSON(http.StatusOK, gin.H{"message": "Stadium Deleted Successfully"})
+}

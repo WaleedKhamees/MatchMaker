@@ -16,7 +16,7 @@ func EFAAuth(context *gin.Context) {
 		return
 	}
 
-	if role != "efa" && role != "master" {
+	if role != "efa" {
 		context.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
 	}
 

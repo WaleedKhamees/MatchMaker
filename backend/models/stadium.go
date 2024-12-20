@@ -65,3 +65,32 @@ func GetAllStadiums() ([]Stadium, error) {
 	}
 	return stadiums, nil
 }
+
+func (s *Stadium) Update() error {
+	query := `
+		UPDATE staduims
+		SET name = ?, capacity = ?, vipRows = ?, seatsPerRow = ?
+		WHERE id = ?
+		`
+	stmt, err := db.DB.Prepare(query)
+	if err != nil {
+		return err
+	}
+	defer stmt.Close()
+	_, err = stmt.Exec(s.Name, s.Capacity, s.VipRows, s.SeatsPerRow, s.Id)
+	return err
+}
+
+func DeleteStadium(stadiumid int) error {
+	query := `
+		DELETE FROM staduims
+		WHERE id = ?
+		`
+	stmt, err := db.DB.Prepare(query)
+	if err != nil {
+		return err
+	}
+	defer stmt.Close()
+	_, err = stmt.Exec(stadiumid)
+	return err
+}
