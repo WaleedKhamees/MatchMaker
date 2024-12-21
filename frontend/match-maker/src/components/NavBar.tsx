@@ -4,6 +4,7 @@ import { useContext, useState } from "react";
 import { AuthContext } from "../context/Auth";
 import { useShowError } from "../context/Error";
 import { fetchRegister } from "@/utils/api";
+import Link from "next/link";
 
 function LoginModal({
   onClose,
@@ -78,13 +79,16 @@ const NavBar = () => {
       <div className="flex items-center space-x-4">
         {isLoggedIn ? (
           <>
-            <span className="text-gray-700">Welcome, {user?.Username}</span>
+            <span className="text-gray-700">Welcome, {user?.Firstname}</span>
             <button
               onClick={Logout}
               className="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded"
             >
               Logout
             </button>
+            <Link href="/edit" className="text-blue-500 hover:underline">
+              Edit Profile
+            </Link>
           </>
         ) : (
           <>
@@ -122,7 +126,6 @@ const NavBar = () => {
 
 function SignUpModal({ onClose }: { onClose: () => void }) {
   const showError = useShowError();
-  const [feedback, setFeedback] = useState("");
   const [formData, setFormData] = useState({
     username: "",
     firstname: "",
@@ -134,7 +137,7 @@ function SignUpModal({ onClose }: { onClose: () => void }) {
     birthdate: "",
     city: "",
     address: "",
-    role: "customer",
+    role: "",
   });
 
   const handleChange = (
@@ -150,16 +153,20 @@ function SignUpModal({ onClose }: { onClose: () => void }) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Basic validation
     if (formData.password !== formData.confirmPassword) {
       showError("Passwords do not match");
       return;
     }
 
+    if (formData.role === "") {
+      showError("Please select a role");
+      return;
+    }
+
     try {
       const { message } = await fetchRegister(formData);
-      setFeedback(message);
-      onClose()
+      showError(message, true);
+      onClose();
     } catch (error: any) {
       showError(error.error);
     }
@@ -246,6 +253,19 @@ function SignUpModal({ onClose }: { onClose: () => void }) {
             <option value="male">Male</option>
             <option value="female">Female</option>
           </select>
+          <select
+            name="role"
+            value={formData.role}
+            onChange={handleChange}
+            required
+            className="w-full p-2 border rounded"
+          >
+            <option value="">Select Role</option>
+            <option value="customer">Customer</option>
+            <option value="efa">EFA Admin</option>
+            <option value="master">Master</option>
+          </select>
+
           <input
             type="date"
             name="birthdate"
@@ -269,12 +289,8 @@ function SignUpModal({ onClose }: { onClose: () => void }) {
             placeholder="Address"
             value={formData.address}
             onChange={handleChange}
-            required
             className="w-full p-2 border rounded"
           />
-          {feedback && (
-            <div className="text-center text-green-500">{feedback}</div>
-          )}
           <button
             type="submit"
             className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600"

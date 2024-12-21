@@ -53,13 +53,15 @@ export async function fetchLogin(loginData: LoginData): Promise<any> {
       body: JSON.stringify(data),
     });
 
-    if (response.ok) {
-      return await response.json();
-    } else {
-      const error = await response.json();
-      throw new Error(error.error);
+    const output = await response.json();
+
+    if (!response.ok) {
+      throw new Error(output.error);
     }
-  } catch (error: any) {
+
+    return output;
+
+   } catch (error: any) {
     throw error;
   }
 }
@@ -85,6 +87,28 @@ export async function fetchRegister(registrationData: RegistrationData) {
     const data = await response.json();
     return data;
   } catch (error) {
+    throw error;
+  }
+}
+
+export async function fetchEditUser(userData: any) {
+  try {
+    const response = await fetch(`${BASE_URL}/user`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": GetAuthToken() || "",
+      },
+      body: JSON.stringify(userData),
+    });
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error);
+    }
+    return data;
+  }
+  catch (error) {
     throw error;
   }
 }

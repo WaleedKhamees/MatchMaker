@@ -62,6 +62,10 @@ const MatchPage: React.FC = () => {
           )
         );
       }
+
+      else if (data.typeofreq === "error") {
+        showError(data.error);
+      }
     });
 
     if (id) {
@@ -109,15 +113,6 @@ const MatchPage: React.FC = () => {
       })
     );
 
-    setReservedSeats((seats) => [
-      ...seats,
-      {
-        Username: getUser()?.Username!,
-        SeatRow: row,
-        SeatColumn: col,
-      },
-    ]);
-
   };
 
   const handleCancelSeat = (row: number, col: number) => {
@@ -135,11 +130,6 @@ const MatchPage: React.FC = () => {
       })
     );
 
-    setReservedSeats((seats) =>
-      seats.filter(
-        (seat) => !(seat.SeatRow === row && seat.SeatColumn === col)
-      )
-    );
   }
 
   return (
