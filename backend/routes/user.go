@@ -1,10 +1,10 @@
 package routes
 
 import (
+	"log"
 	"net/http"
 
 	"github.com/WaleedKhamees/MatchMaker/models"
-	"github.com/WaleedKhamees/MatchMaker/utils"
 	"github.com/gin-gonic/gin"
 )
 
@@ -43,6 +43,13 @@ func UpdateUser(context *gin.Context) {
 	var user models.User
 	err := context.ShouldBindJSON(&user)
 
+	if err != nil {
+		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	log.Printf("User: %v", user)
+
 	username := context.GetString("username")
 
 	if username != user.Username {
@@ -50,17 +57,7 @@ func UpdateUser(context *gin.Context) {
 		return
 	}
 
-	if err != nil {
-		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-	orginalUser, err := models.GetUser(&user.Username, nil)
-	if err != nil {
-		context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	err = user.Update(!utils.ComparePassword(user.Password, orginalUser.Password))
+	err = user.Update(user.Password != "")
 	if err != nil {
 		context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

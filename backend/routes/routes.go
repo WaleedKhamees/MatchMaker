@@ -16,7 +16,7 @@ import (
 func RegisterRoutes(server *gin.Engine) {
 	server.GET("/user", middlewares.MasterAuth, getAllUsers)
 	server.GET("/user/:username", getUserByUsername)
-	server.PUT("/user", UpdateUser)
+	server.PUT("/user", middlewares.CustomerAuth, UpdateUser)
 
 	server.GET("/user/approve", middlewares.MasterAuth, getUnapprovedUsers)
 	server.PUT("/user/approve", middlewares.MasterAuth, approveUser)
@@ -53,6 +53,7 @@ func RegisterRoutes(server *gin.Engine) {
 	initSocket(server)
 
 }
+
 func initSocket(server *gin.Engine) {
 	c := socket.DefaultServerOptions()
 	c.SetServeClient(true)

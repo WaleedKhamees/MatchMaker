@@ -72,6 +72,11 @@ func register(context *gin.Context) {
 		return
 	}
 
+	if user.Password == "" {
+		context.JSON(http.StatusBadRequest, gin.H{"error": "Password is required"})
+		return
+	}
+
 	err = utils.ValidatePassword(user.Password)
 	if err != nil {
 		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})

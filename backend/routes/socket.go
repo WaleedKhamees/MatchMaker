@@ -20,65 +20,113 @@ func handleReserve(socketio *socket.Server, client *socket.Socket, args ...inter
 		SeatColumn int    `json:"seatcol" binding:"required"`
 	}
 
-	// Expect args[0] to be a string
+	var errorstruct struct {
+		Typeofreq string `json:"typeofreq"`
+		Error     string `json:"error"`
+	}
+
 	msg, ok := args[0].(string)
 	if !ok {
 		log.Println("Invalid message format, expected string")
+
+		errorstruct.Typeofreq = "error"
+		errorstruct.Error = "Invalid message format, expected string"
+		outputMsg, _ := json.Marshal(errorstruct)
+		client.Emit("onreserve", string(outputMsg))
+
 		return
 	}
 
-	// Unmarshal the message into seatStruct
 	err := json.Unmarshal([]byte(msg), &seatStruct)
 	if err != nil {
-		log.Println("Error parsing JSON:", err)
+		errorstruct.Typeofreq = "error"
+		errorstruct.Error = "Error parsing JSON"
+		outputMsg, _ := json.Marshal(errorstruct)
+		client.Emit("onreserve", string(outputMsg))
+
 		return
 	}
 
-	// Print out the parsed struct
 	fmt.Printf("%+v\n", seatStruct)
 
-	// Verify the token
 	username, _, _, err := utils.VerifyToken(seatStruct.Token)
 	if err != nil {
-		log.Println("Error verifying token:", err)
+		errorstruct.Typeofreq = "error"
+		errorstruct.Error = "Error verifying token"
+		outputMsg, _ := json.Marshal(errorstruct)
+		client.Emit("onreserve", string(outputMsg))
+
 		return
 	}
 
-	// Get the match from the database
 	match, err := models.GetMatchByID(seatStruct.MatchID)
 	if err != nil {
-		log.Println("Error getting match:", err)
+		errorstruct.Typeofreq = "error"
+		errorstruct.Error = "Error getting match"
+		outputMsg, _ := json.Marshal(errorstruct)
+		client.Emit("onreserve", string(outputMsg))
+
 		return
 	}
 
 	// Check if the match has already started
 	if time.Until(match.Date) <= 0 {
-		log.Println("Match has already started")
+		errorstruct.Typeofreq = "error"
+		errorstruct.Error = "Match has already started"
+		outputMsg, _ := json.Marshal(errorstruct)
+		client.Emit("onreserve", string(outputMsg))
+
 		return
 	}
 
-	// Check if the seat is available
 	available, err := models.CheckSeatAvailability(int64(seatStruct.MatchID), int64(seatStruct.SeatRow), int64(seatStruct.SeatColumn))
 
-	log.Println("Seat availability:", available)
-
 	if err != nil {
-		log.Println("Error checking seat availability:", err)
+		errorstruct.Typeofreq = "error"
+		errorstruct.Error = "Error checking seat availability"
+		outputMsg, _ := json.Marshal(errorstruct)
+		client.Emit("onreserve", string(outputMsg))
+
 		return
 	}
 
 	if !available {
-		log.Println("Seat is not available")
+		errorstruct.Typeofreq = "error"
+		errorstruct.Error = "Seat is already reserved"
+		outputMsg, _ := json.Marshal(errorstruct)
+		client.Emit("onreserve", string(outputMsg))
 		return
 	}
 
-	// Reserve the seat
-	err = models.ReserveSeat(int64(seatStruct.MatchID), int64(seatStruct.SeatRow), int64(seatStruct.SeatColumn), username)
+	canReserve, err := models.CanReserveSeat(seatStruct.MatchID, username)
+
 	if err != nil {
-		log.Println("Error reserving seat:", err)
+		errorstruct.Typeofreq = "error"
+		errorstruct.Error = "Error checking if seat can be reserved"
+		outputMsg, _ := json.Marshal(errorstruct)
+		client.Emit("onreserve", string(outputMsg))
 		return
 	}
-	// Prepare the output struct
+
+	if !canReserve {
+		errorstruct.Typeofreq = "error"
+		errorstruct.Error = "cannot reserve more than one seat"
+		outputMsg, _ := json.Marshal(errorstruct)
+		client.Emit("onreserve", string(outputMsg))
+		return
+	}
+
+	err = models.ReserveSeat(int64(seatStruct.MatchID), int64(seatStruct.SeatRow), int64(seatStruct.SeatColumn), username)
+
+	if err != nil {
+		errorstruct.Typeofreq = "error"
+		errorstruct.Error = "Error reserving seat"
+		outputMsg, _ := json.Marshal(errorstruct)
+		client.Emit("onreserve", string(outputMsg))
+
+		return
+	}
+
 	var outputStruct struct {
 		TypeOfReq  string `json:"typeofreq" binding:"required"`
 		SeatRow    int    `json:"seatrow" binding:"required"`
@@ -103,6 +151,7 @@ func handleReserve(socketio *socket.Server, client *socket.Socket, args ...inter
 	room := socket.Room("match-" + fmt.Sprint(seatStruct.MatchID))
 
 	client.To(room).Emit("onreserve", string(outputMsg))
+	client.Emit("onreserve", string(outputMsg))
 }
 
 func handleSubscribeToMatch(_ *socket.Server, client *socket.Socket, args ...interface{}) {
@@ -192,4 +241,5 @@ func handleCancel(_ *socket.Server, client *socket.Socket, args ...interface{}) 
 	room := socket.Room("match-" + fmt.Sprint(seatStruct.MatchID))
 
 	client.To(room).Emit("onreserve", string(outputMsg))
+	client.Emit("onreserve", string(outputMsg))
 }

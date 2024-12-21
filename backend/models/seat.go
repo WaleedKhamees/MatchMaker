@@ -76,3 +76,13 @@ func ReserveSeat(matchId int64, sRow int64, sCol int64, username string) error {
 	_, err := db.DB.Exec(query, matchId, sRow, sCol, username)
 	return err
 }
+
+func CanReserveSeat(matchid int, username string) (bool, error) {
+	query := "SELECT * FROM seats WHERE matchId = ? AND username = ?"
+	rows, err := db.DB.Query(query, matchid, username)
+	if err != nil {
+		return false, err
+	}
+	defer rows.Close()
+	return !rows.Next(), nil
+}

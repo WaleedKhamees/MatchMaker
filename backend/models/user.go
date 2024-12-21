@@ -15,11 +15,11 @@ type User struct {
 	Lastname   string    `binding:"required"`
 	Gender     string    `binding:"required"`
 	Email      string    `binding:"required"`
-	Password   string    `binding:"required"`
 	Role       string    `binding:"required"`
 	Birthdate  time.Time `binding:"required"`
 	City       string    `binding:"required"`
-	Address    string    `binding:"required"`
+	Password   string
+	Address    string
 	Creditcard string
 	Creditpin  string
 	Approved   bool
@@ -65,20 +65,22 @@ func (u *User) Update(updatePassword bool) error {
 
 	var password string
 
+	originalUser, _ := GetUser(&u.Username, nil)
+
 	if updatePassword {
 		password, err = utils.HashPassword(u.Password)
 		if err != nil {
 			return err
 		}
 	} else {
-		password = u.Password
+		password = originalUser.Password
 	}
 
 	_, err = stmt.Exec(
 		u.Firstname, u.Lastname,
 		u.Gender, password, u.Role,
 		u.Birthdate, u.Address, u.City, u.Creditcard,
-		u.Creditpin, u.Approved, u.Username)
+		u.Creditpin, 1, u.Username)
 
 	return err
 }
